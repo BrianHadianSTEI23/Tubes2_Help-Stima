@@ -24,39 +24,39 @@ func RecipeConstructor(target *model.AlchemyTree, returnJSON *model.Response, mo
 					Node:   []string{},
 					Edge:   [][]string{},
 				}
-				if newReturnJSON != nil {
-					// setting up the status
-					(*newReturnJSON).Status = "Fail"
 
-					// turn the pair parent into array
-					var edge []string
-					edge = append(edge, (*parent).Ingridient1.Name)
-					edge = append(edge, (*parent).Ingridient2.Name)
+				// setting up the status
+				(*newReturnJSON).Status = "Fail"
 
-					// bind edge and node into newReturnJSON
-					(*newReturnJSON).Edge = append((*newReturnJSON).Edge, edge)
-					(*newReturnJSON).Node = append((*newReturnJSON).Node, (*target).Name)
-					(*newReturnJSON).NumOfRecipe++
+				// turn the pair parent into array
+				var edge []string
+				edge = append(edge, (*parent).Ingridient1.Name)
+				edge = append(edge, (*parent).Ingridient2.Name)
 
-					// check again for doing recursive the first parent
-					if (*parent).Ingridient1 == nil || (*parent).Ingridient1.Name == "Fire" || (*parent).Ingridient1.Name == "Water" || (*parent).Ingridient1.Name == "Air" || (*parent).Ingridient1.Name == "Earth" || (*parent).Ingridient1.Name == "Time" {
-						// check the second parent
-						if (*parent).Ingridient2 == nil || (*parent).Ingridient2.Name == "Fire" || (*parent).Ingridient2.Name == "Water" || (*parent).Ingridient2.Name == "Air" || (*parent).Ingridient2.Name == "Earth" || (*parent).Ingridient2.Name == "Time" {
-							// return the json
-						} else { // do recursive of recipe constructor on the second parent
-							RecipeConstructor(parent.Ingridient2, newReturnJSON, mode)
-						}
-					} else {
-						RecipeConstructor(parent.Ingridient1, newReturnJSON, mode)
+				// bind edge and node into newReturnJSON
+				(*newReturnJSON).Edge = append((*newReturnJSON).Edge, edge)
+				(*newReturnJSON).Node = append((*newReturnJSON).Node, (*target).Name)
+				(*newReturnJSON).NumOfRecipe++
+
+				// check again for doing recursive the first parent
+				if (*parent).Ingridient1 == nil || (*parent).Ingridient1.Name == "Fire" || (*parent).Ingridient1.Name == "Water" || (*parent).Ingridient1.Name == "Air" || (*parent).Ingridient1.Name == "Earth" || (*parent).Ingridient1.Name == "Time" {
+					// check the second parent
+					if (*parent).Ingridient2 == nil || (*parent).Ingridient2.Name == "Fire" || (*parent).Ingridient2.Name == "Water" || (*parent).Ingridient2.Name == "Air" || (*parent).Ingridient2.Name == "Earth" || (*parent).Ingridient2.Name == "Time" {
+						// return the json
+					} else { // do recursive of recipe constructor on the second parent
+						RecipeConstructor(parent.Ingridient2, newReturnJSON, mode)
 					}
-
-					// bind the newResponseJSON into the response model IF IT'S SMALLER THAN CURRENT ONE
-					if len((*returnJSON).Edge) > len((*newReturnJSON).Edge) {
-						returnJSON.Edge = newReturnJSON.Edge
-						returnJSON.Node = newReturnJSON.Node
-						(*returnJSON).Status = "Success"
-					}
+				} else {
+					RecipeConstructor(parent.Ingridient1, newReturnJSON, mode)
 				}
+
+				// bind the newResponseJSON into the response model IF IT'S SMALLER THAN CURRENT ONE
+				if len((*returnJSON).Edge) > len((*newReturnJSON).Edge) {
+					returnJSON.Edge = newReturnJSON.Edge
+					returnJSON.Node = newReturnJSON.Node
+					(*returnJSON).Status = "Success"
+				}
+
 			}
 		} else if mode == 2 { // multiple recipe
 			// iterate for each parent

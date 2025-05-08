@@ -45,5 +45,4 @@ func DFSAlchemyTree(target string, t []*model.AlchemyTree, r *model.Response, mo
 	}
 
 	wg.Wait()
-	return
 }

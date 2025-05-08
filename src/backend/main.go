@@ -2,13 +2,26 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"littlealchemy2/algorithm"
 	"littlealchemy2/model"
+	"net/http"
 	"os"
 	"strings"
 )
 
+type Message struct {
+	Text string `json:"text"`
+}
+
+// define endpoint API link
+func GETHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Message{Text: "Hello world!"})
+}
+
+// main function
 func main() {
 	// variables
 	var target string
@@ -19,8 +32,8 @@ func main() {
 	var listOfAllRecipes [][]string
 	var listOfCreatedNodes []*model.AlchemyTree
 	var rootElements []*model.AlchemyTree
-	var numOfRecipesFound *int64
-	(*numOfRecipesFound) = 0
+	numOfRecipesFound := new(int64) // allocates memory
+	*numOfRecipesFound = 0          // sets the value
 
 	// reading file
 	file, err := os.Open("./data/little_alchemy_2_elements_split.csv")
@@ -111,7 +124,7 @@ func main() {
 	}
 
 	// initializing JSON response
-	var response *model.Response
+	response := new(model.Response)
 	(*response).Status = "Fail"
 
 	// choosing searching algorithm : DFS or BFS
@@ -120,6 +133,7 @@ func main() {
 	} else if searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64
+		fmt.Println("How many recipe do you want?")
 		fmt.Scanln(&askedNumOfRecipes)
 
 		// doing search algorithm
@@ -132,5 +146,12 @@ func main() {
 		}
 	}
 
+	// debug
+	model.DisplayResponse(response)
+
+	// BACKEND API
+	// http.HandleFunc("api/get-recipe", GETHandler)
+	// log.Println("Go API running on https://localhost:8080")
+	// log.Fatal(http.ListenAndServe(":8080", nil))
 	// send the output JSON [NOT IMPLEMENTED]
 }
