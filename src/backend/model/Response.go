@@ -1,7 +1,8 @@
 package model
 
 type Response struct {
-	Status string
-	Node   []string
-	Edge   [][]string
+	Status      string
+	NumOfRecipe int64
+	Node        []string
+	Edge        [][]string
 }

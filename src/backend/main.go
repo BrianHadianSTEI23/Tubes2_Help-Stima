@@ -19,6 +19,8 @@ func main() {
 	var listOfAllRecipes [][]string
 	var listOfCreatedNodes []*model.AlchemyTree
 	var rootElements []*model.AlchemyTree
+	var numOfRecipesFound *int64
+	(*numOfRecipesFound) = 0
 
 	// reading file
 	file, err := os.Open("./data/little_alchemy_2_elements_split.csv")
@@ -113,26 +115,22 @@ func main() {
 	(*response).Status = "Fail"
 
 	// choosing searching algorithm : DFS or BFS
-	if mode == 1 {
-		// choosing mode : multiple recipe or shortest recipe
-		outputJSON := algorithm.SearchShortestRecipe(listOfCreatedNodes, target, response, int8(searchAlgorithm))
-		// if len(outputJSON) != 0 { // need to be implemented for new data structures
-		// 	outputJSON.Status = "Success"
-		// }
-
-		// send the output JSON [NOT IMPLEMENTED]
-	} else if mode == 2 {
-		// get how many recipes are asked
+	if searchAlgorithm == 1 {
+		algorithm.DFSAlchemyTree(target, rootElements, response, int8(mode), numOfRecipesFound)
+	} else if searchAlgorithm == 2 {
+		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64
 		fmt.Scanln(&askedNumOfRecipes)
 
 		// doing search algorithm
-		outputJSON := algorithm.SearchMultipleRecipe(listOfCreatedNodes, target, response, int8(searchAlgorithm), askedNumOfRecipes)
-		// if len(outputJSON.Data) != 0 { // need to be implemented for new data structures
-		// 	outputJSON.Status = "Success"
-		// }
-
-		// send the output JSON [NOT IMPLEMENTED]
-
+		algorithm.BFSAlchemyTree(target, rootElements, response, int8(mode), numOfRecipesFound)
+		if (*numOfRecipesFound) > askedNumOfRecipes {
+			// change the number of recipes found in the response model
+			(*response).NumOfRecipe = askedNumOfRecipes
+		} else {
+			(*response).NumOfRecipe = (*numOfRecipesFound)
+		}
 	}
+
+	// send the output JSON [NOT IMPLEMENTED]
 }
