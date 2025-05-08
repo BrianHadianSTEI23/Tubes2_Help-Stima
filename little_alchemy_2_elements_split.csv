@@ -1,10 +1,14 @@
 Element;Ingredient1;Ingredient2
+Air;-;-
+Earth;-;-
+Water;-;-
+Fire;-;-
+Time;-;-
 Air;Fire;Mist
 Fire;Fire;Alcohol
 Fire;Fire;Coal
 Water;Heat;Ice
 Water;Heat;Snow
-Time;Have 100 elements unlocked, including the starting elements.;
 Dust;Earth;Air
 Dust;Soil;Air
 Dust;Land;Air
