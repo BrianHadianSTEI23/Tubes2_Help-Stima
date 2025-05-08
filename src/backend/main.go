@@ -6,12 +6,9 @@ import (
 	"fmt"
 	"littlealchemy2/algorithm"
 	"littlealchemy2/model"
-	"log"
 	"net/http"
 	"os"
 	"strings"
-
-	"github.com/rs/cors"
 )
 
 type Message struct {
@@ -104,9 +101,50 @@ func main() {
 	algorithm.BuildAlchemyTree(rootElements, &listOfAllRecipes, &listOfCreatedNodes)
 
 	// debug
-	// for _, root := range rootElements {
-	// 	model.DisplayAlchemyTree(root)
-	// }
+	for _, node := range listOfCreatedNodes {
+		fmt.Println((*node).Name)
+		fmt.Println("PARENTS")
+		for _, p := range node.Parent {
+			if (*p).Ingridient1 != nil {
+				fmt.Print((*p).Ingridient1.Name + " | ")
+			} else {
+				fmt.Print("nil")
+			}
+			if (*p).Ingridient2 != nil {
+				fmt.Print((*p).Ingridient2.Name + " | ")
+			} else {
+				fmt.Print("nil")
+			}
+		}
+		fmt.Println("CHILDREN")
+		for _, c := range node.Children {
+			if c != nil {
+				fmt.Print((*c).Name + " | ")
+			} else {
+				fmt.Print("nil")
+			}
+			if c != nil {
+				fmt.Print((*c).Name + " | ")
+			} else {
+				fmt.Print("nil")
+			}
+		}
+		fmt.Println("COMPANION")
+		for _, co := range node.Companion {
+			if co != nil {
+				fmt.Print((*co).Name + " | ")
+			} else {
+				fmt.Print("nil")
+			}
+			if co != nil {
+				fmt.Print((*co).Name + " | ")
+			} else {
+				fmt.Print("nil")
+			}
+		}
+
+		// model.DisplayAlchemyTree(root)
+	}
 
 	// main algorithm
 	fmt.Println("Give me your target : ")
@@ -141,11 +179,15 @@ func main() {
 
 		// doing search algorithm
 		algorithm.DFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
-		if (*numOfRecipesFound) > askedNumOfRecipes {
-			// change the number of recipes found in the response model
-			(*response).NumOfRecipe = askedNumOfRecipes
-		} else {
-			(*response).NumOfRecipe = (*numOfRecipesFound)
+
+		// final handling
+		if (*mode) == 2 {
+			if (*response).NumOfRecipe > askedNumOfRecipes {
+				// change the number of recipes found in the response model
+				(*response).NumOfRecipe = askedNumOfRecipes
+			} else {
+				fmt.Printf("Found only : %d recipes\n", ((*response).NumOfRecipe))
+			}
 		}
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
@@ -157,21 +199,25 @@ func main() {
 
 		// doing search algorithm
 		algorithm.BFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
-		if (*numOfRecipesFound) > askedNumOfRecipes {
-			// change the number of recipes found in the response model
-			(*response).NumOfRecipe = askedNumOfRecipes
-		} else {
-			(*response).NumOfRecipe = (*numOfRecipesFound)
+
+		// final handling
+		if (*mode) == 2 {
+			if (*response).NumOfRecipe > askedNumOfRecipes {
+				// change the number of recipes found in the response model
+				(*response).NumOfRecipe = askedNumOfRecipes
+			} else {
+				fmt.Printf("Found only : %d recipes\n", ((*response).NumOfRecipe))
+			}
 		}
 	}
 
 	// debug
 	model.DisplayResponse(response)
 
-	// BACKEND API
-	mux := http.NewServeMux()
-	mux.HandleFunc("/api/hello", GETHandler)
+	// // BACKEND API
+	// mux := http.NewServeMux()
+	// mux.HandleFunc("/api/hello", GETHandler)
 
-	handler := cors.Default().Handler(mux)
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	// handler := cors.Default().Handler(mux)
+	// log.Fatal(http.ListenAndServe(":8080", handler))
 }

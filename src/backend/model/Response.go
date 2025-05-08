@@ -19,3 +19,25 @@ func DisplayResponse(r *Response) {
 		fmt.Println(e)
 	}
 }
+
+func DeepCopyResponse(src Response) Response {
+	// Copy Node slice
+	nodeCopy := make([]string, len(src.Node))
+	copy(nodeCopy, src.Node)
+
+	// Copy Edge slice
+	edgeCopy := make([][]string, len(src.Edge))
+	for i, pair := range src.Edge {
+		pairCopy := make([]string, len(pair))
+		copy(pairCopy, pair)
+		edgeCopy[i] = pairCopy
+	}
+
+	// Return new deep copied Response
+	return Response{
+		Node:        nodeCopy,
+		Edge:        edgeCopy,
+		NumOfRecipe: src.NumOfRecipe,
+		Status:      src.Status,
+	}
+}

@@ -21,10 +21,13 @@ func DFSAlchemyTree(target string, t []*model.AlchemyTree, r *model.Response, mo
 		if t.Name == target {
 			atomic.StoreInt32(&found, 1)
 			// if found, add to count and construct recipe
-			if mode == 2 || (mode == 1 && (*numOfFoundRecipe) < 1) { // not shortest path mode
-				(*numOfFoundRecipe)++
-				RecipeConstructor(t, r, mode)
+			tempJSON := model.Response{
+				Status:      "Fail",
+				NumOfRecipe: 0,
+				Node:        []string{},
+				Edge:        [][]string{},
 			}
+			RecipeConstructor(t, r, mode, tempJSON)
 			return
 		}
 

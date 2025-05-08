@@ -1,90 +1,93 @@
 package algorithm
 
 import (
+	"fmt"
 	"littlealchemy2/model"
 )
 
-func RecipeConstructor(target *model.AlchemyTree, returnJSON *model.Response, mode int8) {
+func RecipeConstructor(root *model.AlchemyTree, returnJSON *model.Response, mode int8, tempJSON model.Response) {
 	/*
-		1. do loop for all parent of target
+		1. do loop for all parent of root
 		2. for each parent, do recursive
-		3. if target is fire, earth, air, water, or time -> check the other parent
+		3. if root is fire, earth, air, water, or time -> check the other parent
 		4. else do loop again
 	*/
 
 	// main algorithm
-	if target != nil {
-		// change mode : search shortest first or multiple recipe
-		if mode == 1 { // shortest path
-			// iterate for each parent
-			for _, parent := range (*target).Parent {
-				// generate new response model
-				newReturnJSON := &model.Response{
-					Status: "",
-					Node:   []string{},
-					Edge:   [][]string{},
-				}
+	if root != nil {
+		// bind node into newReturnJSON
+		tempJSON.Node = append(tempJSON.Node, (*root).Name)
+		// iterate for each parent
+		for _, parent := range (*root).Parent {
+			fmt.Println((*parent).Ingridient1.Name)
+			fmt.Println((*parent).Ingridient2.Name)
 
-				// setting up the status
-				(*newReturnJSON).Status = "Fail"
+			// turn the pair parent into array
+			edge1 := []string{(*parent).Ingridient1.Name, (*root).Name}
+			edge2 := []string{(*parent).Ingridient2.Name, (*root).Name}
+			tempJSON.Edge = append(tempJSON.Edge, edge1, edge2)
 
-				// turn the pair parent into array
-				var edge []string
-				edge = append(edge, (*parent).Ingridient1.Name)
-				edge = append(edge, (*parent).Ingridient2.Name)
-
-				// bind edge and node into newReturnJSON
-				(*newReturnJSON).Edge = append((*newReturnJSON).Edge, edge)
-				(*newReturnJSON).Node = append((*newReturnJSON).Node, (*target).Name)
-				(*newReturnJSON).NumOfRecipe++
-
-				// check again for doing recursive the first parent
-				if (*parent).Ingridient1 == nil || (*parent).Ingridient1.Name == "Fire" || (*parent).Ingridient1.Name == "Water" || (*parent).Ingridient1.Name == "Air" || (*parent).Ingridient1.Name == "Earth" || (*parent).Ingridient1.Name == "Time" {
-					// check the second parent
-					if (*parent).Ingridient2 == nil || (*parent).Ingridient2.Name == "Fire" || (*parent).Ingridient2.Name == "Water" || (*parent).Ingridient2.Name == "Air" || (*parent).Ingridient2.Name == "Earth" || (*parent).Ingridient2.Name == "Time" {
-						// return the json
-					} else { // do recursive of recipe constructor on the second parent
-						RecipeConstructor(parent.Ingridient2, newReturnJSON, mode)
-					}
-				} else {
-					RecipeConstructor(parent.Ingridient1, newReturnJSON, mode)
-				}
-
-				// bind the newResponseJSON into the response model IF IT'S SMALLER THAN CURRENT ONE
-				if len((*returnJSON).Edge) > len((*newReturnJSON).Edge) {
-					returnJSON.Edge = newReturnJSON.Edge
-					returnJSON.Node = newReturnJSON.Node
+			// check again for doing recursive the first parent
+			if (*parent).Ingridient1 == nil || (*parent).Ingridient1.Name == "Fire" || (*parent).Ingridient1.Name == "Water" || (*parent).Ingridient1.Name == "Air" || (*parent).Ingridient1.Name == "Earth" || (*parent).Ingridient1.Name == "Time" {
+				// check the second parent
+				if (*parent).Ingridient2 == nil || (*parent).Ingridient2.Name == "Fire" || (*parent).Ingridient2.Name == "Water" || (*parent).Ingridient2.Name == "Air" || (*parent).Ingridient2.Name == "Earth" || (*parent).Ingridient2.Name == "Time" {
+					// return the json
+					(*returnJSON).NumOfRecipe++
 					(*returnJSON).Status = "Success"
-				}
-
-			}
-		} else if mode == 2 { // multiple recipe
-			// iterate for each parent
-			for _, parent := range (*target).Parent {
-				// turn the pair parent into array
-				var edge []string
-				edge = append(edge, (*parent).Ingridient1.Name)
-				edge = append(edge, (*parent).Ingridient2.Name)
-
-				// add the edge and node into the response model
-				(*returnJSON).Edge = append((*returnJSON).Edge, edge)
-				(*returnJSON).Node = append((*returnJSON).Node, (*target).Name)
-
-				// check the first parent
-				if (*parent).Ingridient1 == nil || (*parent).Ingridient1.Name == "Fire" || (*parent).Ingridient1.Name == "Water" || (*parent).Ingridient1.Name == "Air" || (*parent).Ingridient1.Name == "Earth" || (*parent).Ingridient1.Name == "Time" {
-					// check the second parent
-					if (*parent).Ingridient2 == nil || (*parent).Ingridient2.Name == "Fire" || (*parent).Ingridient2.Name == "Water" || (*parent).Ingridient2.Name == "Air" || (*parent).Ingridient2.Name == "Earth" || (*parent).Ingridient2.Name == "Time" {
-						// return the json
-					} else { // do recursive of recipe constructor on the second parent
-						RecipeConstructor(parent.Ingridient2, returnJSON, mode)
+					// change mode : search shortest first or multiple recipe
+					if mode == 1 { // shortest path
+						/*
+							1. check if the current returnJSON.Edge has length 0 or not, if yes, put right into it
+							2. if the length > 0, check if it's less
+						*/
+						if (len((*returnJSON).Edge) == 0) || (len((*returnJSON).Edge) > len(tempJSON.Edge)) {
+							(*returnJSON).Edge = tempJSON.Edge
+							(*returnJSON).Node = tempJSON.Node
+						}
+					} else if mode == 2 { // multiple recipe
+						/* just keep adding into the returnJSON */
+						for _, e := range tempJSON.Edge {
+							// debug
+							// fmt.Println(e[0])
+							// fmt.Println(e[1])
+							if !IsPairInArray(e, (*returnJSON).Edge) {
+								(*returnJSON).Edge = append((*returnJSON).Edge, e)
+							}
+						}
+						for _, n := range tempJSON.Node {
+							// debug
+							// fmt.Println(n)
+							if !IsElementInArray(n, (*returnJSON).Node) {
+								(*returnJSON).Node = append((*returnJSON).Node, n)
+							}
+						}
 					}
-				} else {
-					RecipeConstructor(parent.Ingridient1, returnJSON, mode)
+				} else { // do recursive of recipe constructor on the second parent
+					newTempJSON := model.DeepCopyResponse(tempJSON)
+					RecipeConstructor(parent.Ingridient2, returnJSON, mode, newTempJSON)
 				}
-
-				// mark the responseJSON to be success
-				(*returnJSON).Status = "Success"
+			} else {
+				newTempJSON := model.DeepCopyResponse(tempJSON)
+				RecipeConstructor(parent.Ingridient1, returnJSON, mode, newTempJSON)
 			}
 		}
 	}
+}
+
+func IsPairInArray(pair []string, array [][]string) bool {
+	for _, a := range array {
+		if a[0] == pair[0] && a[1] == pair[1] {
+			return true
+		}
+	}
+	return false
+}
+
+func IsElementInArray(el string, array []string) bool {
+	for _, a := range array {
+		if el == a {
+			return true
+		}
+	}
+	return false
 }
