@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"littlealchemy2/algorithm"
 	"littlealchemy2/model"
+	"log"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/rs/cors"
 )
 
 type Message struct {
@@ -18,17 +21,17 @@ type Message struct {
 // define endpoint API link
 func GETHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(Message{Text: "Hello world!"})
+	json.NewEncoder(w).Encode(Message{Text: "Hello from Go!"})
 }
 
 // main function
 func main() {
 	// variables
 	var target string
-	var mode int
-	mode = 0
-	var searchAlgorithm int
-	searchAlgorithm = 0
+	mode := new(int)
+	*mode = 0
+	searchAlgorithm := new(int)
+	*searchAlgorithm = 0
 	var listOfAllRecipes [][]string
 	var listOfCreatedNodes []*model.AlchemyTree
 	var rootElements []*model.AlchemyTree
@@ -111,16 +114,16 @@ func main() {
 	fmt.Println("Choose algorithm : ")
 	fmt.Println("1. DFS ")
 	fmt.Println("2. BFS ")
-	for searchAlgorithm != 1 && searchAlgorithm != 2 {
+	for *searchAlgorithm != 1 && *searchAlgorithm != 2 {
 		fmt.Println("Please enter a number...")
-		fmt.Scanln(&searchAlgorithm)
+		fmt.Scanln(searchAlgorithm)
 	}
 	fmt.Println("Choose mode : ")
 	fmt.Println("1. Shortest Path ")
 	fmt.Println("2. Multiple Recipe ")
-	for mode != 1 && mode != 2 {
+	for *mode != 1 && *mode != 2 {
 		fmt.Println("Please enter a number...")
-		fmt.Scanln(&mode)
+		fmt.Scanln(mode)
 	}
 
 	// initializing JSON response
@@ -128,16 +131,32 @@ func main() {
 	(*response).Status = "Fail"
 
 	// choosing searching algorithm : DFS or BFS
-	if searchAlgorithm == 1 {
-		algorithm.DFSAlchemyTree(target, rootElements, response, int8(mode), numOfRecipesFound)
-	} else if searchAlgorithm == 2 {
+	if *searchAlgorithm == 1 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64
-		fmt.Println("How many recipe do you want?")
-		fmt.Scanln(&askedNumOfRecipes)
+		if (*mode) == 2 { // multiple recipe
+			fmt.Println("How many recipe do you want?")
+			fmt.Scanln(&askedNumOfRecipes)
+		}
 
 		// doing search algorithm
-		algorithm.BFSAlchemyTree(target, rootElements, response, int8(mode), numOfRecipesFound)
+		algorithm.DFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
+		if (*numOfRecipesFound) > askedNumOfRecipes {
+			// change the number of recipes found in the response model
+			(*response).NumOfRecipe = askedNumOfRecipes
+		} else {
+			(*response).NumOfRecipe = (*numOfRecipesFound)
+		}
+	} else if *searchAlgorithm == 2 {
+		// get how many num of recipes is being asked
+		var askedNumOfRecipes int64
+		if (*mode) == 2 { // multiple recipe
+			fmt.Println("How many recipe do you want?")
+			fmt.Scanln(&askedNumOfRecipes)
+		}
+
+		// doing search algorithm
+		algorithm.BFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
 		if (*numOfRecipesFound) > askedNumOfRecipes {
 			// change the number of recipes found in the response model
 			(*response).NumOfRecipe = askedNumOfRecipes
@@ -150,8 +169,9 @@ func main() {
 	model.DisplayResponse(response)
 
 	// BACKEND API
-	// http.HandleFunc("api/get-recipe", GETHandler)
-	// log.Println("Go API running on https://localhost:8080")
-	// log.Fatal(http.ListenAndServe(":8080", nil))
-	// send the output JSON [NOT IMPLEMENTED]
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/hello", GETHandler)
+
+	handler := cors.Default().Handler(mux)
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
