@@ -44,12 +44,32 @@ import "littlealchemy2/model"
 // 	return false
 // }
 
-func SearchShortestRecipe(rootElements []*model.AlchemyTree) {
+func SearchShortestRecipe(listOfNodes []*model.AlchemyTree, target string, Response *model.Response, mode int8) *model.Response {
 
+	if mode == 1 { // DFS
+		// if the child name is found, get the companion of the same index in the companion array
+		// and then add the combination and child into the response data
+		return DFSAlchemyTree(target, listOfNodes, Response, 1, 1)
+	} else if mode == 2 { // BFS
+		// if the child name is found, get the companion of the same index in the companion array
+		// and then add the combination and child into the response data
+		return BFSAlchemyTree(target, listOfNodes, Response, 1, 1)
+	} else {
+		return Response
+	}
 }
 
-func SearchMultipleRecipe(rootElements []*model.AlchemyTree, askedNumOfRecipes int64) {
-	/*
-		1.
-	*/
+func SearchMultipleRecipe(listOfNodes []*model.AlchemyTree, target string, Response *model.Response, mode int8, askedNumOfRecipes int64) *model.Response {
+
+	if mode == 1 { // DFS
+		// if the child name is found, get the companion of the same index in the companion array
+		// and then add the combination and child into the response data
+		return DFSAlchemyTree(target, listOfNodes, Response, askedNumOfRecipes, 2)
+	} else if mode == 2 { // BFS
+		// if the child name is found, get the companion of the same index in the companion array
+		// and then add the combination and child into the response data
+		return BFSAlchemyTree(target, listOfNodes, Response, askedNumOfRecipes, 2)
+	} else {
+		return Response
+	}
 }

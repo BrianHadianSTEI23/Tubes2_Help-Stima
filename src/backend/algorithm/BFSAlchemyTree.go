@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 )
 
-func BFSAlchemyTree(target string, t []*model.AlchemyTree) bool {
+func BFSAlchemyTree(target string, t []*model.AlchemyTree, r *model.Response, askedNumOfRecipes int64, mode int8) *model.Response {
 	var wg sync.WaitGroup
 	var found int32 = 0
 	var visited sync.Map
@@ -26,6 +26,16 @@ func BFSAlchemyTree(target string, t []*model.AlchemyTree) bool {
 
 		if t.Name == target {
 			atomic.StoreInt32(&found, 1)
+			// construct the recipe and add into the response
+
+			// creating the child-parent and add the parent
+			// for _, parentPair := range (*t).Parent {
+			// 	var recipe []string
+			// 	recipe = append(recipe, parentPair.Ingridient1.Name)
+			// 	recipe = append(recipe, parentPair.Ingridient2.Name)
+			// 	recipe = append(recipe, (*t).Name)
+			// 	(*r).Data = append((*r).Data, recipe)
+			// }
 			return
 		}
 
@@ -56,6 +66,6 @@ func BFSAlchemyTree(target string, t []*model.AlchemyTree) bool {
 	}
 
 	wg.Wait()
-	return atomic.LoadInt32(&found) == 1
+	return r
 
 }
