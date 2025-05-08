@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useState } from 'react';
+import ForceGraph from "./graph"
 
 export default function Home() {
   const [message, setMessage] = useState('Loading...');
@@ -11,5 +12,8 @@ export default function Home() {
       .catch(() => setMessage('Failed to fetch'));
   }, []);
 
-  return <h1>{message}</h1>;
+    return <main>
+      <h1>{message}</h1>
+      <ForceGraph/>
+    </main>;
 }

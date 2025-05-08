@@ -101,50 +101,53 @@ func main() {
 	algorithm.BuildAlchemyTree(rootElements, &listOfAllRecipes, &listOfCreatedNodes)
 
 	// debug
-	for _, node := range listOfCreatedNodes {
-		fmt.Println((*node).Name)
-		fmt.Println("PARENTS")
-		for _, p := range node.Parent {
-			if (*p).Ingridient1 != nil {
-				fmt.Print((*p).Ingridient1.Name + " | ")
-			} else {
-				fmt.Print("nil")
-			}
-			if (*p).Ingridient2 != nil {
-				fmt.Print((*p).Ingridient2.Name + " | ")
-			} else {
-				fmt.Print("nil")
-			}
-		}
-		fmt.Println("CHILDREN")
-		for _, c := range node.Children {
-			if c != nil {
-				fmt.Print((*c).Name + " | ")
-			} else {
-				fmt.Print("nil")
-			}
-			if c != nil {
-				fmt.Print((*c).Name + " | ")
-			} else {
-				fmt.Print("nil")
-			}
-		}
-		fmt.Println("COMPANION")
-		for _, co := range node.Companion {
-			if co != nil {
-				fmt.Print((*co).Name + " | ")
-			} else {
-				fmt.Print("nil")
-			}
-			if co != nil {
-				fmt.Print((*co).Name + " | ")
-			} else {
-				fmt.Print("nil")
-			}
-		}
+	// for _, node := range listOfCreatedNodes {
+	// 	fmt.Println((*node).Name)
+	// 	fmt.Println("PARENTS")
+	// 	for _, p := range node.Parent {
+	// 		if (*p).Ingridient1 != nil {
+	// 			fmt.Print((*p).Ingridient1.Name + " | ")
+	// 		} else {
+	// 			fmt.Print("nil")
+	// 		}
+	// 		if (*p).Ingridient2 != nil {
+	// 			fmt.Print((*p).Ingridient2.Name + " | ")
+	// 		} else {
+	// 			fmt.Print("nil")
+	// 		}
+	// 	}
+	// 	fmt.Println()
+	// 	fmt.Println("CHILDREN")
+	// 	for _, c := range node.Children {
+	// 		if c != nil {
+	// 			fmt.Print((*c).Name + " | ")
+	// 		} else {
+	// 			fmt.Print("nil")
+	// 		}
+	// 		if c != nil {
+	// 			fmt.Print((*c).Name + " | ")
+	// 		} else {
+	// 			fmt.Print("nil")
+	// 		}
+	// 	}
+	// 	fmt.Println()
+	// 	fmt.Println("COMPANION")
+	// 	for _, co := range node.Companion {
+	// 		if co != nil {
+	// 			fmt.Print((*co).Name + " | ")
+	// 		} else {
+	// 			fmt.Print("nil")
+	// 		}
+	// 		if co != nil {
+	// 			fmt.Print((*co).Name + " | ")
+	// 		} else {
+	// 			fmt.Print("nil")
+	// 		}
+	// 	}
+	// 	fmt.Println()
 
-		// model.DisplayAlchemyTree(root)
-	}
+	// 	model.DisplayAlchemyTree(node)
+	// }
 
 	// main algorithm
 	fmt.Println("Give me your target : ")

@@ -1,7 +1,6 @@
 package algorithm
 
 import (
-	"fmt"
 	"littlealchemy2/model"
 )
 
@@ -19,8 +18,8 @@ func RecipeConstructor(root *model.AlchemyTree, returnJSON *model.Response, mode
 		tempJSON.Node = append(tempJSON.Node, (*root).Name)
 		// iterate for each parent
 		for _, parent := range (*root).Parent {
-			fmt.Println((*parent).Ingridient1.Name)
-			fmt.Println((*parent).Ingridient2.Name)
+			// fmt.Println((*parent).Ingridient1.Name)
+			// fmt.Println((*parent).Ingridient2.Name)
 
 			// turn the pair parent into array
 			edge1 := []string{(*parent).Ingridient1.Name, (*root).Name}
@@ -63,12 +62,12 @@ func RecipeConstructor(root *model.AlchemyTree, returnJSON *model.Response, mode
 						}
 					}
 				} else { // do recursive of recipe constructor on the second parent
-					newTempJSON := model.DeepCopyResponse(tempJSON)
-					RecipeConstructor(parent.Ingridient2, returnJSON, mode, newTempJSON)
+					// newTempJSON := model.DeepCopyResponse(tempJSON)
+					go RecipeConstructor(parent.Ingridient2, returnJSON, mode, tempJSON)
 				}
 			} else {
-				newTempJSON := model.DeepCopyResponse(tempJSON)
-				RecipeConstructor(parent.Ingridient1, returnJSON, mode, newTempJSON)
+				// newTempJSON := model.DeepCopyResponse(tempJSON)
+				go RecipeConstructor(parent.Ingridient1, returnJSON, mode, tempJSON)
 			}
 		}
 	}

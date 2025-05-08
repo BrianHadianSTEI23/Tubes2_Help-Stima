@@ -12,9 +12,11 @@ type Response struct {
 func DisplayResponse(r *Response) {
 	fmt.Println((*r).Status)
 	fmt.Println((*r).NumOfRecipe)
+	fmt.Printf("Num of node : %d\n", len((*r).Node))
 	for _, n := range (*r).Node {
 		fmt.Println(n)
 	}
+	fmt.Printf("Num of edge : %d\n", len((*r).Edge))
 	for _, e := range (*r).Edge {
 		fmt.Println(e)
 	}
