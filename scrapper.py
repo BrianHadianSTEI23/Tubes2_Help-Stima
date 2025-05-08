@@ -57,4 +57,4 @@ with open(filename, mode="w", newline="", encoding="utf-8") as file:
     writer.writerow(["Element", "Ingredient1", "Ingredient2"])
     writer.writerows(elements_data)
 
-print(f"Sukses! Data disimpan di '{filename}' dengan {len(elements_data)} kombinasi.")
+print(f"Data disimpan di '{filename}' dengan {len(elements_data)} kombinasi.")
