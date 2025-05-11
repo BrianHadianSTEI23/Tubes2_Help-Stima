@@ -1,0 +1,13 @@
+# Mengatur line endings untuk file teks
+* text=auto
+
+# Pastikan file tertentu menggunakan LF
+*.js text eol=lf
+*.ts text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
+
+# Untuk file biner, biarkan Git tidak mengubah line endings
+*.png binary
+*.jpg binary
+*.gif binary
