@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 
+// Dynamically import the Tree component from react-d3-tree
 const Tree = dynamic(() => import("react-d3-tree").then((mod) => mod.Tree), {
   ssr: false,
 });
@@ -11,6 +12,7 @@ export default function RecipeTree({ data }) {
   const treeRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 600 });
 
+  // Calculate tree dimensions on component mount
   useEffect(() => {
     if (treeRef.current) {
       const { width, height } = treeRef.current.getBoundingClientRect();
@@ -18,15 +20,10 @@ export default function RecipeTree({ data }) {
     }
   }, []);
 
-  const getColor = (name) => {
-    const lower = name.toLowerCase();
-    if (lower === "water") return "#3B82F6";
-    if (lower === "earth") return "#10B981";
-    if (lower === "fire") return "#B22200";
-    if (lower === "air") return "#6B7280";
-    return "#E0E0E0";
-  };
+  // Unified color for all nodes
+  const nodeColor = "#B0B0B0";  // Set to a pleasant green color
 
+  // Memoize the custom node renderer to prevent unnecessary re-renders
   const renderCustomNode = ({ nodeDatum }) => {
     const name = String(nodeDatum.name);
     const paddingX = 20;
@@ -35,7 +32,8 @@ export default function RecipeTree({ data }) {
     const boxWidth = textWidth + paddingX;
     const boxHeight = 40;
 
-    const fillColor = getColor(name);
+    // Use the same color for all nodes
+    const fillColor = nodeColor;
 
     return (
       <g transform="rotate(180)">
@@ -49,19 +47,19 @@ export default function RecipeTree({ data }) {
           strokeWidth="1.5"
           rx={8}
         />
-       <text
-            fill="#000000"
-            x={0}
-            y={4} // teks lebih jauh di bawah node
-            textAnchor="middle"
-            style={{
-                fontSize: "14px",
-                fontFamily: "Roboto",
-                fontWeight: "normal",
-
-            }}
-            >
-            {name}
+        <text
+          fill="#000000" // Set the text color to white for better contrast
+          x={0}
+          y={5} // Move the text slightly lower inside the node
+          textAnchor="middle"
+          stroke = "none"
+          style={{
+            fontSize: "16px", // Slightly larger text for better readability
+            fontFamily: "Roboto, sans-serif",
+            fontWeight: "800",  // A bit of boldness for clarity
+          }}
+        >
+          {name}
         </text>
       </g>
     );
@@ -75,16 +73,18 @@ export default function RecipeTree({ data }) {
         height: "600px",
         transform: "rotate(180deg)",
         background: "#F9FAFB",
-        padding: "1rem",
+        padding: "1.5rem",  // Increased padding for better spacing
         borderRadius: "8px",
+        boxSizing: "border-box",
+        overflow: "hidden",
       }}
     >
       <Tree
         data={data}
         orientation="vertical"
-        translate={{ x: dimensions.width / 2, y: dimensions.height - 50 }}
+        translate={{ x: dimensions.width/2, y: dimensions.height/2 }}
         pathFunc="elbow"
-        depthFactor={150}
+        depthFactor={120}
         collapsible={false}
         nodeSize={{ x: 200, y: 100 }}
         renderCustomNodeElement={renderCustomNode}

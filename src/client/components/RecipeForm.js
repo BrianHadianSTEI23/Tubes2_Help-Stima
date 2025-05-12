@@ -21,6 +21,14 @@ export default function RecipeForm() {
   const [maxRecipes, setMaxRecipes] = useState(1);
   const [result, setResult] = useState(null);
 
+  const handleBack = () => {
+    window.history.back(); // Navigasi ke halaman sebelumnya
+  };
+
+  const handleRefresh = () => {
+    window.location.reload(); // Me-refresh halaman saat ini
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -77,8 +85,8 @@ export default function RecipeForm() {
             onChange={(e) => setAlgorithm(e.target.value)}
             className="border border-gray-400 rounded px-3 py-2 w-full"
           >
-            <option value="1">DFS</option>
-            <option value="2">BFS</option>
+            <option value="1">DFS (Depth-First Search)</option>
+            <option value="2">BFS (Breadth-First Search)</option>
             <option value="3">Bidirectional (Bonus)</option>
           </select>
         </div>
@@ -108,9 +116,27 @@ export default function RecipeForm() {
           </div>
         )}
 
-        <button type="submit" className="bg-black text-white font-semibold px-4 py-2 rounded">
-          Cari
-        </button>
+        <div className="flex justify-between mt-4">
+          <button type="submit" className="bg-[#260027] text-white font-semibold px-4 py-2 rounded">
+            Cari
+          </button>
+          <div className="flex space-x-4">
+            <button
+              type="button"
+              onClick={handleRefresh}
+              className="bg-gray-400 text-[#260027] font-semibold px-4 py-2 rounded"
+            >
+              Refresh
+            </button>
+            <button
+              type="button"
+              onClick={handleBack}
+              className="bg-[#FAA620] text-[#260027] font-semibold px-4 py-2 rounded"
+            >
+              Kembali
+            </button>
+          </div>
+        </div>
       </form>
 
       {result && (
