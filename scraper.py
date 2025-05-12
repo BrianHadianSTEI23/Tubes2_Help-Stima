@@ -15,17 +15,27 @@ elements_data.append(["Water", "-", "-"])
 elements_data.append(["Fire", "-", "-"])
 elements_data.append(["Time", "-", "-"])
 
+elements_image = set()
+
 for table in tables:
     rows = table.find_all("tr")[1:]
     last_element_name = ""
 
     for row in rows:
+        image_link = row.find("span").find("span").find("a")["href"]
+        mark = ".svg"
+        mark_pos = image_link.find(mark)
+        if(mark_pos != -1): 
+            image_link = image_link[0:mark_pos+len(mark)]
+
         cols = row.find_all("td")
 
         if len(cols) == 2:
             element_name = cols[0].text.strip()
             last_element_name = element_name
             combo_cell = cols[1]
+
+            elements_image.add((element_name, image_link))
         else:
             continue
 
@@ -58,3 +68,12 @@ with open(filename, mode="w", newline="", encoding="utf-8") as file:
     writer.writerows(elements_data)
 
 print(f"Data disimpan di '{filename}' dengan {len(elements_data)} kombinasi.")
+
+# Simpan gambar elemen
+filename = "./gambar_elemen.csv"
+with open(filename, mode="w", newline="", encoding="utf-8") as file:
+    writer = csv.writer(file, delimiter=";")
+    writer.writerow(["Element", "Image"])
+    writer.writerows(elements_image)
+
+print(f"Data gambar disimpan di '{filename}' dengan {len(elements_image)} gambar.")
