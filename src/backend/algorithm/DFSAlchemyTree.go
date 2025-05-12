@@ -94,8 +94,9 @@ func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, r *m
 				return
 			}
 			wg.Add(1)
-			go dfs(parent.Ingridient1)
-			go dfs(parent.Ingridient2)
+			dfs(parent.Ingridient1)
+			wg.Add(1)
+			dfs(parent.Ingridient2)
 		}
 
 		// appending the parent while in recursive

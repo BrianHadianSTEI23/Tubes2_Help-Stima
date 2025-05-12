@@ -42,6 +42,7 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, r *m
 			}
 			wg.Add(1)
 			go bfs(parent.Ingridient1)
+			wg.Add(1)
 			go bfs(parent.Ingridient2)
 		}
 
