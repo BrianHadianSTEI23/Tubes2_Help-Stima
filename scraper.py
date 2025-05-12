@@ -51,7 +51,7 @@ for table in tables:
             if(len(ingredient1) <= 20): elements_data.append([element_name, ingredient1, ingredient2])
 
 # Simpan ke CSV
-filename = "./little_alchemy_2_elements_split.csv"
+filename = "./kombinasi_elemen.csv"
 with open(filename, mode="w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file, delimiter=";")
     writer.writerow(["Element", "Ingredient1", "Ingredient2"])
