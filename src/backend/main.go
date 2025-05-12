@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"littlealchemy2/algorithm"
 	"littlealchemy2/model"
 	"net/http"
-	"os"
-	"strings"
 
 	"github.com/rs/cors"
 )
@@ -22,25 +19,16 @@ var searchAlgorithm = new(int)
 var listOfAllRecipes [][]string
 var listOfCreatedNodes []*model.AlchemyTree
 var rootElements []*model.AlchemyTree
-var numOfRecipesFound = new(int64)
+
+// var listOfElementImage map[string]string
+
+// var numOfRecipesFound = new(int64)
 var getRequest = &model.GetRequest{}
 var response = &model.Response{}
 
 func init_main() {
 	// reading file
-	file, err := os.Open("./data/little_alchemy_2_elements_split.csv")
-	if err != nil {
-		fmt.Println("File is invalid")
-		return
-	}
-	defer file.Close()
-
-	// output content to the terminal
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.Split(scanner.Text(), ";")
-		listOfAllRecipes = append(listOfAllRecipes, line)
-	}
+	listOfAllRecipes, _ = algorithm.Scraper()
 
 	/* build tree that intertwined all possible recipes:
 	start with 5 basic elements, basic tree structure : name, companion, parent, and children
@@ -168,10 +156,10 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 // main function
 func main() {
 
-	// initialize the main graph
+	// // initialize the main graph
 	init_main()
 
-	// // BACKEND API
+	// // // BACKEND API
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/post-recipe", postHandler)
 
@@ -180,6 +168,7 @@ func main() {
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type"},
 	}).Handler(mux)
+	fmt.Println("Server is running at http://localhost:8080")
 
 	http.ListenAndServe(":8080", handler)
 
