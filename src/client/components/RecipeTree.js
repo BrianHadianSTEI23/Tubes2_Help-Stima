@@ -28,7 +28,7 @@ export default function RecipeTree({ data }) {
   };
 
   const renderCustomNode = ({ nodeDatum }) => {
-    const name = nodeDatum.name;
+    const name = String(nodeDatum.name);
     const paddingX = 20;
     const charWidth = 8;
     const textWidth = name.length * charWidth;

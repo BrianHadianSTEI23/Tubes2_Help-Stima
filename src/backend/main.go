@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"littlealchemy2/algorithm"
 	"littlealchemy2/model"
+	"log"
 	"net/http"
 
 	"github.com/rs/cors"
@@ -149,6 +149,8 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		// }
 	}
 
+	log.Println(*response)
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -168,9 +170,9 @@ func main() {
 		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type"},
 	}).Handler(mux)
-	fmt.Println("Server is running at http://localhost:8080")
+	log.Println("Server is running at http://localhost:8080")
 
-	http.ListenAndServe(":8080", handler)
+	log.Fatal(http.ListenAndServe(":8080", handler))
 
 	// debug
 	// model.DisplayResponse(response)

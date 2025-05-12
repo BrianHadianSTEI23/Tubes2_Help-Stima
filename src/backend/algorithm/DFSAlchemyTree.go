@@ -74,18 +74,18 @@ func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, r *m
 
 		if (*t).Name == "Fire" || (*t).Name == "Water" || (*t).Name == "Air" || (*t).Name == "Earth" || (*t).Name == "Time" {
 			// STOP : adding the tree into the response
-			newTree := &model.Tree{
+			newTree := model.Tree{
 				Name:     (*t).Name,
-				Children: []*model.Tree{},
+				Children: []model.Tree{},
 			}
 			r.NumOfRecipe++
 			r.Data.Children = append(r.Data.Children, newTree)
 			return
 		}
 		// adding the tree into the response
-		newTree := &model.Tree{
+		newTree := model.Tree{
 			Name:     (*t).Name,
-			Children: []*model.Tree{},
+			Children: []model.Tree{},
 		}
 
 		// traverse parent
