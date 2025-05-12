@@ -6,10 +6,9 @@ import (
 	"sync/atomic"
 )
 
-func BFSAlchemyTree(target string, t []*model.AlchemyTree, r *model.Response, mode int8, numOfFoundRecipe *int64) {
+func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, r *model.Response, askedNumOfRecipes *int64) {
 	var wg sync.WaitGroup
 	var found int32 = 0
-	var visited sync.Map
 
 	var bfs func(t *model.AlchemyTree)
 	bfs = func(t *model.AlchemyTree) {
@@ -19,47 +18,42 @@ func BFSAlchemyTree(target string, t []*model.AlchemyTree, r *model.Response, mo
 			return
 		}
 
-		_, loaded := visited.LoadOrStore(t.Name, true)
-		if loaded {
-			return
-		}
-
-		if t.Name == target {
-			atomic.StoreInt32(&found, 1)
-			// if found, add to count and construct recipe
-			tempJSON := model.Response{
-				Status:      "Fail",
-				NumOfRecipe: 0,
-				Node:        []string{},
-				Edge:        [][]string{},
+		if (*t).Name == "Fire" || (*t).Name == "Water" || (*t).Name == "Air" || (*t).Name == "Earth" || (*t).Name == "Time" {
+			// STOP : adding the tree into the response
+			newTree := &model.Tree{
+				Name:     (*t).Name,
+				Children: []*model.Tree{},
 			}
-			RecipeConstructor(t, r, mode, tempJSON)
+			r.NumOfRecipe++
+			r.Data.Children = append(r.Data.Children, newTree)
 			return
 		}
 
-		// traverse companion
-		for _, comp := range t.Companion {
+		// adding the tree into the response
+		newTree := &model.Tree{
+			Name:     (*t).Name,
+			Children: []*model.Tree{},
+		}
+
+		// traverse parent
+		for _, parent := range t.Parent {
 			if atomic.LoadInt32(&found) == 1 {
 				return
 			}
 			wg.Add(1)
-			go bfs(comp)
+			go bfs(parent.Ingridient1)
+			go bfs(parent.Ingridient2)
 		}
 
-		// traverse children
-		for _, child := range t.Children {
-			if atomic.LoadInt32(&found) == 1 {
-				return
-			}
-			wg.Add(1)
-			go bfs(child)
-		}
+		// appending the parent while in recursive
+		r.Data.Children = append(r.Data.Children, newTree)
 	}
 
-	for _, root := range t {
-		if root != nil {
+	// construct the recipe
+	for _, n := range listOfCreatedNodes {
+		if n.Name == target && (*r).NumOfRecipe < (*askedNumOfRecipes) {
 			wg.Add(1)
-			go bfs(root)
+			go bfs(n)
 		}
 	}
 

@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/rs/cors"
 )
 
 // initialize all variables
@@ -22,7 +24,7 @@ var listOfCreatedNodes []*model.AlchemyTree
 var rootElements []*model.AlchemyTree
 var numOfRecipesFound = new(int64)
 var getRequest = &model.GetRequest{}
-var response = &model.Response{Status: "Fail"}
+var response = &model.Response{}
 
 func init_main() {
 	// reading file
@@ -115,53 +117,48 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "mode: %d\n", getRequest.Mode)
 	// fmt.Fprintf(w, "maxRecipes: %d\n", getRequest.MaxRecipes)
 
-	// main algorithm
 	// assignment
 	target = (*getRequest).Target
 	(*searchAlgorithm) = (*getRequest).Algorithm
 	(*mode) = (*getRequest).Mode
 
+	// initialize the main tree
+	response.Data.Name = target
+	response.NumOfRecipe = 0
+
 	// choosing searching algorithm : DFS or BFS
 	if *searchAlgorithm == 1 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
-		// if (*mode) == 2 { // multiple recipe
-		// 	fmt.Println("How many recipe do you want?")
-		// 	fmt.Scanln(&askedNumOfRecipes)
-		// }
 
 		// doing search algorithm
-		algorithm.DFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
+		algorithm.DFSAlchemyTree(target, listOfCreatedNodes, response, &askedNumOfRecipes)
 
 		// final handling
-		if (*mode) == 2 {
-			if (*response).NumOfRecipe > askedNumOfRecipes {
-				// change the number of recipes found in the response model
-				(*response).NumOfRecipe = askedNumOfRecipes
-			} else {
-				fmt.Printf("Found only : %d recipes\n", ((*response).NumOfRecipe))
-			}
-		}
+		// if (*mode) == 2 {
+		// 	if (*response).Data.NumOfRecipe > askedNumOfRecipes {
+		// 		// change the number of recipes found in the response model
+		// 		(*response).Data.NumOfRecipe = askedNumOfRecipes
+		// 	} else {
+		// 		fmt.Printf("Found only : %d recipes\n", ((*response).Data.NumOfRecipe))
+		// 	}
+		// }
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
-		// if (*mode) == 2 { // multiple recipe
-		// 	fmt.Println("How many recipe do you want?")
-		// 	fmt.Scanln(&askedNumOfRecipes)
-		// }
 
 		// doing search algorithm
-		algorithm.BFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
+		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, response, &askedNumOfRecipes)
 
-		// final handling
-		if (*mode) == 2 {
-			if (*response).NumOfRecipe > askedNumOfRecipes {
-				// change the number of recipes found in the response model
-				(*response).NumOfRecipe = askedNumOfRecipes
-			} else {
-				fmt.Printf("Found only : %d recipes\n", ((*response).NumOfRecipe))
-			}
-		}
+		// // final handling
+		// if (*mode) == 2 {
+		// 	if (*response).NumOfRecipe > askedNumOfRecipes {
+		// 		// change the number of recipes found in the response model
+		// 		(*response).NumOfRecipe = askedNumOfRecipes
+		// 	} else {
+		// 		fmt.Printf("Found only : %d recipes\n", ((*response).Data.NumOfRecipe))
+		// 	}
+		// }
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -175,9 +172,16 @@ func main() {
 	init_main()
 
 	// // BACKEND API
-	http.HandleFunc("/api/post-recipe", postHandler)
-	fmt.Println("Server running on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/post-recipe", postHandler)
+
+	handler := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type"},
+	}).Handler(mux)
+
+	http.ListenAndServe(":8080", handler)
 
 	// debug
 	// model.DisplayResponse(response)

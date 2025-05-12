@@ -7,15 +7,23 @@
         {
           "name": "Mudddd",
           "children": [
-            { "name": "String phone" },
-            { "name": "Earth" }
+            { "name": "String phone" ,
+              "children" : []  
+          },
+            { "name": "Earth" ,
+              "children" : []
+          }
           ]
         },
         {
           "name": "Sandiiiii",
           "children": [
-            { "name": "Airrrr" },
-            { "name": "Stone" }
+            { "name": "Airrrr" ,
+              "children" : []
+          },
+            { "name": "Stone",
+              "children" : []
+          }
           ]
         }
       ]

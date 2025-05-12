@@ -19,10 +19,10 @@ export default function RecipeForm() {
 
     // Membuat payload untuk dikirim
     const payload = {
-      target,
-      algorithm: parseInt(algorithm),
-      mode: parseInt(mode),
-      maxRecipes: parseInt(maxRecipes),
+      Target : target,
+      Algorithm: parseInt(algorithm),
+      Mode: parseInt(mode),
+      MaxRecipes: parseInt(maxRecipes),
     };
 
     // Console log untuk memastikan payload sudah disimpan dengan benar
