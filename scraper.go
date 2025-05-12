@@ -46,7 +46,7 @@ func main() {
 
 	doc.Find("div.mw-content-ltr.mw-parser-output").Each(func(i int, tier *goquery.Selection) {
 
-		currentTier := 0
+		currentTier := -1
 		tier.Find("table.list-table.col-list.icon-hover").Each(func(j int, table *goquery.Selection) {
 			// currentTier := tierList[currentTier]
 			table.Find("tr").Each(func(k int, row *goquery.Selection) {
@@ -72,7 +72,11 @@ func main() {
 				combinationCell := cols.Eq(1)
 
 				elementsImage[elementName] = imageLink
-				elementsTier[elementName] = currentTier
+				if currentTier >= 0 {
+					elementsTier[elementName] = currentTier
+				} else {
+					elementsTier[elementName] = 0
+				}
 
 				var combinations []string
 				if combinationCell.Find("li").Length() > 0 {
