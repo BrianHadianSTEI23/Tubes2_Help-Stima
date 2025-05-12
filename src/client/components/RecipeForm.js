@@ -5,7 +5,14 @@ import RecipeTree from "./RecipeTree";
 import axios from "axios"; // Import axios untuk melakukan HTTP request
 import templateTree from "./template.json"; // import langsung dari JSON file
 
+function normalizeTreeData(node) {
+  if (!node) return null;
 
+  return {
+    name: node.Name,
+    children: node.Children?.map(normalizeTreeData) || []
+  };
+}
 
 export default function RecipeForm() {
   const [target, setTarget] = useState("");
@@ -31,12 +38,14 @@ export default function RecipeForm() {
     try {
       // Mengirimkan data ke server menggunakan axios
       const response = await axios.post("http://localhost:8080/api/post-recipe", payload);
-      
+      const { Data: val, NumOfRecipe } = response.data;
+
+      console.log(val)
       // Menyimpan hasil yang diterima dari server ke dalam result
       setResult({
         status: "success",
         message: "Data berhasil diterima!",
-        tree: response.data, // Asumsi response dari server berisi data pohon
+        tree:val, // Asumsi response dari server berisi data pohon
       });
     } catch (err) {
       console.error("Gagal fetch ke backend:", err.message);
@@ -110,7 +119,7 @@ export default function RecipeForm() {
           {result.tree && (
             <>
               <h4 className="text-lg font-semibold mt-6 mb-2">Visualisasi Tree</h4>
-              <RecipeTree data={result.tree} />
+              <RecipeTree data={normalizeTreeData(result.tree)} />
             </>
           )}
         </div>

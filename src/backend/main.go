@@ -173,7 +173,4 @@ func main() {
 	log.Println("Server is running at http://localhost:8080")
 
 	log.Fatal(http.ListenAndServe(":8080", handler))
-
-	// debug
-	// model.DisplayResponse(response)
 }
