@@ -3,6 +3,9 @@
 import { useState } from "react";
 import RecipeTree from "./RecipeTree";
 import axios from "axios"; // Import axios untuk melakukan HTTP request
+import templateTree from "./template.json"; // import langsung dari JSON file
+
+
 
 export default function RecipeForm() {
   const [target, setTarget] = useState("");
@@ -27,7 +30,7 @@ export default function RecipeForm() {
 
     try {
       // Mengirimkan data ke server menggunakan axios
-      const response = await axios.post("http://localhost:8080/api/get-recipe", payload);
+      const response = await axios.post("http://localhost:8080/api/post-recipe", payload);
       
       // Menyimpan hasil yang diterima dari server ke dalam result
       setResult({
