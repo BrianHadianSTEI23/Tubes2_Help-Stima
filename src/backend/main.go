@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"littlealchemy2/algorithm"
 	"littlealchemy2/model"
 	"net/http"
@@ -11,30 +12,19 @@ import (
 	"strings"
 )
 
-type Message struct {
-	Text string `json:"text"`
-}
+// initialize all variables
+// variables
+var target string
+var mode = new(int)
+var searchAlgorithm = new(int)
+var listOfAllRecipes [][]string
+var listOfCreatedNodes []*model.AlchemyTree
+var rootElements []*model.AlchemyTree
+var numOfRecipesFound = new(int64)
+var getRequest = &model.GetRequest{}
+var response = &model.Response{Status: "Fail"}
 
-// define endpoint API link
-func GETHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(Message{Text: "Hello from Go!"})
-}
-
-// main function
-func main() {
-	// variables
-	var target string
-	mode := new(int)
-	*mode = 0
-	searchAlgorithm := new(int)
-	*searchAlgorithm = 0
-	var listOfAllRecipes [][]string
-	var listOfCreatedNodes []*model.AlchemyTree
-	var rootElements []*model.AlchemyTree
-	numOfRecipesFound := new(int64) // allocates memory
-	*numOfRecipesFound = 0          // sets the value
-
+func init_main() {
 	// reading file
 	file, err := os.Open("./data/little_alchemy_2_elements_split.csv")
 	if err != nil {
@@ -100,85 +90,45 @@ func main() {
 
 	algorithm.BuildAlchemyTree(rootElements, &listOfAllRecipes, &listOfCreatedNodes)
 
-	// debug
-	// for _, node := range listOfCreatedNodes {
-	// 	fmt.Println((*node).Name)
-	// 	fmt.Println("PARENTS")
-	// 	for _, p := range node.Parent {
-	// 		if (*p).Ingridient1 != nil {
-	// 			fmt.Print((*p).Ingridient1.Name + " | ")
-	// 		} else {
-	// 			fmt.Print("nil")
-	// 		}
-	// 		if (*p).Ingridient2 != nil {
-	// 			fmt.Print((*p).Ingridient2.Name + " | ")
-	// 		} else {
-	// 			fmt.Print("nil")
-	// 		}
-	// 	}
-	// 	fmt.Println()
-	// 	fmt.Println("CHILDREN")
-	// 	for _, c := range node.Children {
-	// 		if c != nil {
-	// 			fmt.Print((*c).Name + " | ")
-	// 		} else {
-	// 			fmt.Print("nil")
-	// 		}
-	// 		if c != nil {
-	// 			fmt.Print((*c).Name + " | ")
-	// 		} else {
-	// 			fmt.Print("nil")
-	// 		}
-	// 	}
-	// 	fmt.Println()
-	// 	fmt.Println("COMPANION")
-	// 	for _, co := range node.Companion {
-	// 		if co != nil {
-	// 			fmt.Print((*co).Name + " | ")
-	// 		} else {
-	// 			fmt.Print("nil")
-	// 		}
-	// 		if co != nil {
-	// 			fmt.Print((*co).Name + " | ")
-	// 		} else {
-	// 			fmt.Print("nil")
-	// 		}
-	// 	}
-	// 	fmt.Println()
+}
 
-	// 	model.DisplayAlchemyTree(node)
-	// }
+func postHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Can't read body", http.StatusBadRequest)
+		return
+	}
+
+	if err := json.Unmarshal(body, getRequest); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// debug
+	// fmt.Fprintf(w, "target: %s\n", getRequest.Target)
+	// fmt.Fprintf(w, "algorithm: %d\n", getRequest.Algorithm)
+	// fmt.Fprintf(w, "mode: %d\n", getRequest.Mode)
+	// fmt.Fprintf(w, "maxRecipes: %d\n", getRequest.MaxRecipes)
 
 	// main algorithm
-	fmt.Println("Give me your target : ")
-	fmt.Scanln(&target)
-	fmt.Println("Choose algorithm : ")
-	fmt.Println("1. DFS ")
-	fmt.Println("2. BFS ")
-	for *searchAlgorithm != 1 && *searchAlgorithm != 2 {
-		fmt.Println("Please enter a number...")
-		fmt.Scanln(searchAlgorithm)
-	}
-	fmt.Println("Choose mode : ")
-	fmt.Println("1. Shortest Path ")
-	fmt.Println("2. Multiple Recipe ")
-	for *mode != 1 && *mode != 2 {
-		fmt.Println("Please enter a number...")
-		fmt.Scanln(mode)
-	}
-
-	// initializing JSON response
-	response := new(model.Response)
-	(*response).Status = "Fail"
+	// assignment
+	target = (*getRequest).Target
+	(*searchAlgorithm) = (*getRequest).Algorithm
+	(*mode) = (*getRequest).Mode
 
 	// choosing searching algorithm : DFS or BFS
 	if *searchAlgorithm == 1 {
 		// get how many num of recipes is being asked
-		var askedNumOfRecipes int64
-		if (*mode) == 2 { // multiple recipe
-			fmt.Println("How many recipe do you want?")
-			fmt.Scanln(&askedNumOfRecipes)
-		}
+		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
+		// if (*mode) == 2 { // multiple recipe
+		// 	fmt.Println("How many recipe do you want?")
+		// 	fmt.Scanln(&askedNumOfRecipes)
+		// }
 
 		// doing search algorithm
 		algorithm.DFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
@@ -194,11 +144,11 @@ func main() {
 		}
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
-		var askedNumOfRecipes int64
-		if (*mode) == 2 { // multiple recipe
-			fmt.Println("How many recipe do you want?")
-			fmt.Scanln(&askedNumOfRecipes)
-		}
+		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
+		// if (*mode) == 2 { // multiple recipe
+		// 	fmt.Println("How many recipe do you want?")
+		// 	fmt.Scanln(&askedNumOfRecipes)
+		// }
 
 		// doing search algorithm
 		algorithm.BFSAlchemyTree(target, rootElements, response, int8(*mode), numOfRecipesFound)
@@ -214,13 +164,21 @@ func main() {
 		}
 	}
 
-	// debug
-	model.DisplayResponse(response)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// main function
+func main() {
+
+	// initialize the main graph
+	init_main()
 
 	// // BACKEND API
-	// mux := http.NewServeMux()
-	// mux.HandleFunc("/api/hello", GETHandler)
+	http.HandleFunc("/api/post-recipe", postHandler)
+	fmt.Println("Server running on http://localhost:8080")
+	http.ListenAndServe(":8080", nil)
 
-	// handler := cors.Default().Handler(mux)
-	// log.Fatal(http.ListenAndServe(":8080", handler))
+	// debug
+	// model.DisplayResponse(response)
 }

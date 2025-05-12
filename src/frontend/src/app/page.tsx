@@ -1,19 +1,28 @@
 "use client"
 import { useEffect, useState } from 'react';
-import ForceGraph from "./graph"
 
 export default function Home() {
-  const [message, setMessage] = useState('Loading...');
+  const [response, setResponse] = useState('Loading');
 
-  useEffect(() => {
-    fetch('http://localhost:8080/api/hello')
-      .then((res) => res.json())
-      .then((data) => setMessage(data.text))
-      .catch(() => setMessage('Failed to fetch'));
-  }, []);
+  const handleSubmit = async () => {
+    const res = await fetch('http://localhost:8080/api/post-recipe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        target: 'Iron',
+        algorithm: 1,
+        mode: 2,
+        maxRecipes: 5
+      })
+    })
+
+    const data = await res.json()
+    setResponse(data.message)
+  }
 
     return <main>
-      <h1>{message}</h1>
-      <ForceGraph/>
+      <h1>{response}</h1>
     </main>;
 }
