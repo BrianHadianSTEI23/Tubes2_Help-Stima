@@ -15,8 +15,8 @@ export default function Home() {
       {/* Header dengan gambar */}
       <header className="relative mb-8">
         <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold text-[#FAA620]">Little Alchemy 2</h2>
-          <p className="text-xl text-slate-50 mt-4">Gabungkan elemen untuk menemukan lebih dari 700 item baru!</p>
+          <h2 className="text-4xl blinking-text font-bold text-[#FAA620]">Little Alchemy 2</h2>
+          <p className="text-xl fading-text text-slate-50 mt-4">Gabungkan elemen untuk menemukan lebih dari 700 item baru!</p>
         </div>
       </header>
 
