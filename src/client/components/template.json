@@ -1,0 +1,35 @@
+{
+  "name": "Brick",
+  "children": [
+    {
+      "name": "Clay",
+      "children": [
+        {
+          "name": "Mudddd",
+          "children": [
+            { "name": "String phone" ,
+              "children" : []  
+          },
+            { "name": "Earth" ,
+              "children" : []
+          }
+          ]
+        },
+        {
+          "name": "Sandiiiii",
+          "children": [
+            { "name": "Airrrr" ,
+              "children" : []
+          },
+            { "name": "Stone",
+              "children" : []
+          }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Fire"
+    }
+  ]
+}
