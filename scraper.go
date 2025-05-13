@@ -1,4 +1,4 @@
-package main
+package sraper
 
 import (
 	"log"
@@ -8,11 +8,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// var elementsCombination [][]string
-// var elementsImage map[string]string
-// var elementsTier map[string]int
+var elementsCombination [][]string
+var elementsImage map[string]string
+var elementsTier map[string]int
 
-func main() {
+func scraper() {
 	url := "https://little-alchemy.fandom.com/wiki/Elements_(Little_Alchemy_2)"
 
 	// Fetch-nya berhasil ga bang
