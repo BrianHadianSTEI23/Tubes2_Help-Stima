@@ -1,4 +1,4 @@
-# This is a placeholder
+# Little Akchemy 2Recipe Finder
 
 
 ## Penjelasan singkat algoritma DFS dan BFS yang diimplementasikan
