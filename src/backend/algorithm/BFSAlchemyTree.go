@@ -2,7 +2,7 @@ package algorithm
 
 import "littlealchemy2/model"
 
-func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, root *model.Tree, mapOfElementsTier map[string]int) {
+func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, response *model.Response, mapOfElementsTier map[string]int) {
 
 	/*
 		algorithm
@@ -20,10 +20,12 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 	}
 
 	// initialize bfs queue
-	BFSQueue := []QueueItem{QueueItem{
-		Name: target,
-		Tree: root,
-	}}
+	BFSQueue := []QueueItem{
+		{
+			Name: target,
+			Tree: &response.Data,
+		},
+	}
 
 	// searching
 	for len(BFSQueue) > 0 {
@@ -43,29 +45,31 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 			if (node != nil) && (head.Name == node.Name) {
 				// search the parent of the head
 				for _, p := range node.Parent {
-					if (mapOfElementsTier[p.Ingridient1.Name] > mapOfElementsTier[head.Name]) && (mapOfElementsTier[p.Ingridient2.Name] > mapOfElementsTier[head.Name]) {
-						// creating tree out of parentNode
-						ing1 := &model.Tree{
-							Name:     p.Ingridient1.Name,
-							Children: []*model.Tree{},
-						}
-						ing2 := &model.Tree{
-							Name:     p.Ingridient2.Name,
-							Children: []*model.Tree{},
-						}
-
-						// bind those parent with the head
-						head.Tree.Children = append(head.Tree.Children, ing1, ing2)
-
-						// add those parent into queue
-						BFSQueue = append(BFSQueue, QueueItem{Name: ing1.Name, Tree: ing1})
-						BFSQueue = append(BFSQueue, QueueItem{Name: ing2.Name, Tree: ing2})
-
-						if mode == 1 { // first found
-							return
-						}
-
+					// if (mapOfElementsTier[p.Ingridient1.Name] > mapOfElementsTier[head.Name]) && (mapOfElementsTier[p.Ingridient2.Name] > mapOfElementsTier[head.Name]) {
+					// creating tree out of parentNode
+					ing1 := &model.Tree{
+						Name:     p.Ingridient1.Name,
+						Children: []*model.Tree{},
 					}
+					ing2 := &model.Tree{
+						Name:     p.Ingridient2.Name,
+						Children: []*model.Tree{},
+					}
+
+					// bind those parent with the head
+					head.Tree.Children = append(head.Tree.Children, ing1, ing2)
+
+					// add those parent into queue
+					BFSQueue = append(BFSQueue, QueueItem{Name: ing1.Name, Tree: ing1})
+					BFSQueue = append(BFSQueue, QueueItem{Name: ing2.Name, Tree: ing2})
+
+					(*response).NumOfRecipe++
+
+					if mode == 1 && response.NumOfRecipe >= *askedNumOfRecipes { // first found
+						return
+					}
+
+					// }
 				}
 			}
 		}
