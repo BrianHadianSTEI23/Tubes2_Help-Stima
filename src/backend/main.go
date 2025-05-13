@@ -7,7 +7,6 @@ import (
 	"littlealchemy2/model"
 	"log"
 	"net/http"
-	"sync"
 
 	"github.com/rs/cors"
 )
@@ -134,7 +133,6 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
-		var wg sync.WaitGroup
 
 		// create initial base node
 		baseNode := &model.Tree{
@@ -144,7 +142,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		response.Data = *baseNode
 
 		// doing search algorithm
-		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, response, mapOfElementsTier, &wg)
+		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, response, mapOfElementsTier)
 	}
 
 	log.Println(*response)
