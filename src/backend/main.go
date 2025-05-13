@@ -7,6 +7,7 @@ import (
 	"littlealchemy2/model"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/rs/cors"
 )
@@ -20,6 +21,7 @@ var listOfAllRecipes [][]string
 var listOfCreatedNodes []*model.AlchemyTree
 var mapOfElementsTier map[string]int
 var rootElements []*model.AlchemyTree
+var totalVisitedNode = new(int64)
 
 // var listOfElementImage map[string]string
 
@@ -125,11 +127,15 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		baseNode := &model.Tree{}
 
 		// doing search algorithm
-		algorithm.DFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, baseNode, mapOfElementsTier, &currentFoundRecipe)
 
+		start := time.Now()
+		algorithm.DFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, baseNode, mapOfElementsTier, &currentFoundRecipe, totalVisitedNode)
+		elapsed := time.Since(start)
 		// final handling
 		response.NumOfRecipe = currentFoundRecipe
 		response.Data = *baseNode
+		response.TotalVisitedNode = (*totalVisitedNode)
+		response.ExecutionTime = elapsed.Milliseconds()
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
@@ -142,7 +148,11 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		response.Data = *baseNode
 
 		// doing search algorithm
-		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, response, mapOfElementsTier)
+		start := time.Now()
+		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, response, mapOfElementsTier, totalVisitedNode)
+		elapsed := time.Since(start)
+		response.TotalVisitedNode = (*totalVisitedNode)
+		response.ExecutionTime = elapsed.Milliseconds()
 	}
 
 	log.Println(*response)

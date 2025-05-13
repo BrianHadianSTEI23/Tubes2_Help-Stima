@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 )
 
-func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, childNode *model.Tree, mapOfElementsTier map[string]int, currentFoundRecipe *int64) {
+func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, childNode *model.Tree, mapOfElementsTier map[string]int, currentFoundRecipe *int64, totalVisitedNode *int64) {
 
 	/**
 	algorithm
@@ -30,7 +30,8 @@ func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 			// fmt.Println(p.Ingridient1.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient1.Name]))
 			// fmt.Println(p.Ingridient2.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient2.Name]))
 			// fmt.Println(n.Name + " " + strconv.Itoa(mapOfElementsTier[n.Name]))
-			if (mapOfElementsTier[p.Ingridient1.Name] < mapOfElementsTier[n.Name]) || (mapOfElementsTier[p.Ingridient2.Name] < mapOfElementsTier[n.Name]) {
+			if (mapOfElementsTier[p.Ingridient1.Name] <= mapOfElementsTier[n.Name]) || (mapOfElementsTier[p.Ingridient2.Name] <= mapOfElementsTier[n.Name]) {
+				(*totalVisitedNode)++
 				ing1 := &model.Tree{Name: p.Ingridient1.Name}
 				ing2 := &model.Tree{Name: p.Ingridient2.Name}
 
@@ -41,11 +42,11 @@ func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 				localWg.Add(2)
 				go func() {
 					defer localWg.Done()
-					DFSAlchemyTree(ing1.Name, listOfCreatedNodes, mode, askedNumOfRecipes, ing1, mapOfElementsTier, currentFoundRecipe)
+					DFSAlchemyTree(ing1.Name, listOfCreatedNodes, mode, askedNumOfRecipes, ing1, mapOfElementsTier, currentFoundRecipe, totalVisitedNode)
 				}()
 				go func() {
 					defer localWg.Done()
-					DFSAlchemyTree(ing2.Name, listOfCreatedNodes, mode, askedNumOfRecipes, ing2, mapOfElementsTier, currentFoundRecipe)
+					DFSAlchemyTree(ing2.Name, listOfCreatedNodes, mode, askedNumOfRecipes, ing2, mapOfElementsTier, currentFoundRecipe, totalVisitedNode)
 				}()
 				localWg.Wait()
 

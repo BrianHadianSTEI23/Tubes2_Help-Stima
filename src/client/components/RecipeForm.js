@@ -49,7 +49,7 @@ export default function RecipeForm() {
     try {
       // Mengirimkan data ke server menggunakan axios
       const response = await axios.post("http://localhost:8080/api/post-recipe", payload);
-      const { Data: val, NumOfRecipe } = response.data;
+      const { Data: val, NumOfRecipe, ExecutionTime, TotalVisitedNode } = response.data;
 
       console.log(val);
       // Menyimpan hasil yang diterima dari server ke dalam result
@@ -57,6 +57,8 @@ export default function RecipeForm() {
         status: "success",
         message: "Data berhasil diterima!",
         tree: val, // Asumsi response dari server berisi data pohon
+        exec_time : ExecutionTime,
+        tot_visited_node : TotalVisitedNode
       });
     } catch (err) {
       console.error("Gagal fetch ke backend:", err.message);
@@ -153,6 +155,18 @@ export default function RecipeForm() {
           )}
         </div>
       )}
+
+      {result && result.status === "success" && (
+        <div className="mt-4">
+          <div>
+            Execution Time: {result.exec_time} ms
+          </div>
+          <div>
+            Total Visited Node: {result.tot_visited_node}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

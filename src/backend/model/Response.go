@@ -6,8 +6,10 @@ type Tree struct {
 }
 
 type Response struct {
-	NumOfRecipe int64
-	Data        Tree
+	NumOfRecipe      int64
+	TotalVisitedNode int64
+	ExecutionTime    int64
+	Data             Tree
 }
 
 // func DisplayResponse(r *Response) {

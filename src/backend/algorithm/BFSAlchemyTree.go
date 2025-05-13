@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 )
 
-func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, response *model.Response, mapOfElementsTier map[string]int) {
+func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, response *model.Response, mapOfElementsTier map[string]int, totalVisitedNode *int64) {
 
 	/*
 		algorithm
@@ -37,6 +37,7 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 		var localWg sync.WaitGroup
 		nextLevelChan := make(chan QueueItem, 100)
 		stopFlag := int32(0)
+		(*totalVisitedNode)++
 
 		for _, item := range BFSQueue {
 			localWg.Add(1)
@@ -59,7 +60,7 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 						// fmt.Println(p.Ingridient2.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient2.Name]))
 						// fmt.Println(node.Name + " " + strconv.Itoa(mapOfElementsTier[node.Name]))
 
-						if (mapOfElementsTier[p.Ingridient1.Name] < mapOfElementsTier[item.Name]) || (mapOfElementsTier[p.Ingridient2.Name] < mapOfElementsTier[item.Name]) {
+						if (mapOfElementsTier[p.Ingridient1.Name] <= mapOfElementsTier[item.Name]) || (mapOfElementsTier[p.Ingridient2.Name] <= mapOfElementsTier[item.Name]) {
 
 							if mode == 1 && atomic.LoadInt32(&stopFlag) == 1 {
 								return
