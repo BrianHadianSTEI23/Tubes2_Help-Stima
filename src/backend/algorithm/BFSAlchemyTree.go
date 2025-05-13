@@ -1,8 +1,12 @@
 package algorithm
 
-import "littlealchemy2/model"
+import (
+	"littlealchemy2/model"
+	"sync"
+	"sync/atomic"
+)
 
-func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, response *model.Response, mapOfElementsTier map[string]int) {
+func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, response *model.Response, mapOfElementsTier map[string]int, wg *sync.WaitGroup) {
 
 	/*
 		algorithm
@@ -29,49 +33,77 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 
 	// searching
 	for len(BFSQueue) > 0 {
-		// partition the queue into two parts : first one and then the rest
-		head := BFSQueue[0]
-		rest := BFSQueue[1:]
+		// do concurrency here
+		var localWg sync.WaitGroup
+		nextLevelChan := make(chan QueueItem, 100)
+		stopFlag := int32(0)
 
-		BFSQueue = rest
+		for _, item := range BFSQueue {
+			localWg.Add(1)
+			go func(item QueueItem) {
+				defer localWg.Done()
 
-		// stop condition
-		if head.Name == "Fire" || head.Name == "Water" || head.Name == "Air" || head.Name == "Earth" || head.Name == "Time" {
-			continue
-		}
-
-		// found the element in created nodes
-		for _, node := range listOfCreatedNodes {
-			if (node != nil) && (head.Name == node.Name) {
-				// search the parent of the head
-				for _, p := range node.Parent {
-					// if (mapOfElementsTier[p.Ingridient1.Name] > mapOfElementsTier[head.Name]) && (mapOfElementsTier[p.Ingridient2.Name] > mapOfElementsTier[head.Name]) {
-					// creating tree out of parentNode
-					ing1 := &model.Tree{
-						Name:     p.Ingridient1.Name,
-						Children: []*model.Tree{},
-					}
-					ing2 := &model.Tree{
-						Name:     p.Ingridient2.Name,
-						Children: []*model.Tree{},
-					}
-
-					// bind those parent with the head
-					head.Tree.Children = append(head.Tree.Children, ing1, ing2)
-
-					// add those parent into queue
-					BFSQueue = append(BFSQueue, QueueItem{Name: ing1.Name, Tree: ing1})
-					BFSQueue = append(BFSQueue, QueueItem{Name: ing2.Name, Tree: ing2})
-
-					(*response).NumOfRecipe++
-
-					if mode == 1 && response.NumOfRecipe >= *askedNumOfRecipes { // first found
-						return
-					}
-
-					// }
+				// stop condition
+				if item.Name == "Fire" || item.Name == "Water" || item.Name == "Air" || item.Name == "Earth" || item.Name == "Time" {
+					return
 				}
-			}
+
+				// found the element in created nodes
+				for _, node := range listOfCreatedNodes {
+					if node == nil || item.Name != node.Name {
+						continue
+					}
+					// search the parent of the head
+					for _, p := range node.Parent {
+						if (mapOfElementsTier[p.Ingridient1.Name] > mapOfElementsTier[item.Name]) && (mapOfElementsTier[p.Ingridient2.Name] > mapOfElementsTier[item.Name]) {
+
+							if mode == 1 && atomic.LoadInt32(&stopFlag) == 1 {
+								return
+							}
+
+							// creating tree out of parentNode
+							ing1 := &model.Tree{
+								Name:     p.Ingridient1.Name,
+								Children: []*model.Tree{},
+							}
+							ing2 := &model.Tree{
+								Name:     p.Ingridient2.Name,
+								Children: []*model.Tree{},
+							}
+
+							// bind those parent with the head
+							item.Tree.Children = append(item.Tree.Children, ing1, ing2)
+
+							// add those parent into queue
+							nextLevelChan <- QueueItem{Name: ing1.Name, Tree: ing1}
+							nextLevelChan <- QueueItem{Name: ing2.Name, Tree: ing2}
+
+							atomic.AddInt64(&response.NumOfRecipe, 1)
+
+							if mode == 1 && response.NumOfRecipe >= *askedNumOfRecipes { // first found
+								atomic.StoreInt32(&stopFlag, 1)
+								return
+							}
+
+						}
+					}
+				}
+			}(item)
 		}
+		localWg.Wait()
+		close(nextLevelChan)
+
+		// Build next level from the channel
+		var nextLevel []QueueItem
+		for item := range nextLevelChan {
+			nextLevel = append(nextLevel, item)
+		}
+
+		// Stop if early exit condition met
+		if mode == 1 && atomic.LoadInt32(&stopFlag) == 1 {
+			break
+		}
+
+		BFSQueue = nextLevel
 	}
 }
