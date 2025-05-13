@@ -4,7 +4,7 @@ import (
 	"littlealchemy2/model"
 )
 
-func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, childNode *model.Tree) {
+func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, childNode *model.Tree, mapOfElementsTier map[string]int) {
 	/**
 	algorithm
 	0. make a stack that first is filled by the target
@@ -24,23 +24,26 @@ func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 	for _, n := range listOfCreatedNodes {
 		if n != nil && n.Name == target {
 			for _, p := range n.Parent {
-				ingridient1 := model.Tree{
-					Name:     p.Ingridient1.Name,
-					Children: nil,
-				}
+				if (mapOfElementsTier[p.Ingridient1.Name] > mapOfElementsTier[n.Name]) && (mapOfElementsTier[p.Ingridient2.Name] > mapOfElementsTier[n.Name]) {
+					ingridient1 := model.Tree{
+						Name:     p.Ingridient1.Name,
+						Children: nil,
+					}
 
-				ingridient2 := model.Tree{
-					Name:     p.Ingridient2.Name,
-					Children: nil,
-				}
+					ingridient2 := model.Tree{
+						Name:     p.Ingridient2.Name,
+						Children: nil,
+					}
 
-				DFSAlchemyTree(ingridient1.Name, listOfCreatedNodes, mode, askedNumOfRecipes, &ingridient1)
-				DFSAlchemyTree(ingridient2.Name, listOfCreatedNodes, mode, askedNumOfRecipes, &ingridient2)
+					DFSAlchemyTree(ingridient1.Name, listOfCreatedNodes, mode, askedNumOfRecipes, &ingridient1, mapOfElementsTier)
+					DFSAlchemyTree(ingridient2.Name, listOfCreatedNodes, mode, askedNumOfRecipes, &ingridient2, mapOfElementsTier)
 
-				childNode.Children = append(childNode.Children, &ingridient1, &ingridient2)
+					childNode.Children = append(childNode.Children, &ingridient1, &ingridient2)
 
-				if mode == 1 { // first found
-					return
+					if mode == 1 { // first found
+						return
+					}
+
 				}
 			}
 

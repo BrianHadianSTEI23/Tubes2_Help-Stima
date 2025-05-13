@@ -124,7 +124,9 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		baseNode := &model.Tree{}
 
 		// doing search algorithm
-		algorithm.DFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, baseNode)
+		algorithm.DFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, baseNode, mapOfElementsTier)
+		response.NumOfRecipe = 0
+		response.Data = *baseNode
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
@@ -136,7 +138,9 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// doing search algorithm
-		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, baseNode)
+		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, baseNode, mapOfElementsTier)
+		response.NumOfRecipe = 0
+		response.Data = *baseNode
 	}
 
 	log.Println(*response)
