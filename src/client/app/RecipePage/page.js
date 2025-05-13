@@ -15,11 +15,13 @@ export default function Home() {
 
       {/* Judul di bawah gambar */}
       <div className="text-center mb-8">
-        <h2 className="text-4xl font-bold" style={{color : "#FAA620"}}>Little Alchemy 2 Recipe Finder</h2>
+        <h2 className="text-4xl font-bold blinking-text" style={{color : "#FAA620"}}>
+          Little Alchemy 2 Recipe Finder
+        </h2>
       </div>
 
       {/* Form untuk pencarian resep */}
-      <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+      <div className="w-full mx-auto bg-white p-6 rounded shadow">
         <RecipeForm />
       </div>
     </main>

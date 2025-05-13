@@ -21,6 +21,14 @@ export default function RecipeForm() {
   const [maxRecipes, setMaxRecipes] = useState(1);
   const [result, setResult] = useState(null);
 
+  const handleBack = () => {
+    window.history.back(); // Navigasi ke halaman sebelumnya
+  };
+
+  const handleRefresh = () => {
+    window.location.reload(); // Me-refresh halaman saat ini
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -55,36 +63,36 @@ export default function RecipeForm() {
 
   return (
     <div className="text-black">
-      <h2 className="text-2xl font-bold mb-4">Pencarian Resep Elemen</h2>
+      <h2 className="text-2xl text-[#260027] font-bold mb-4">Pencarian Resep Elemen</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block font-semibold mb-1">Elemen Tujuan</label>
+          <label className="block text-[#260027] font-semibold mb-1">Elemen Tujuan</label>
           <input
             type="text"
             value={target}
             onChange={(e) => setTarget(e.target.value)}
             placeholder="Contoh: Brick"
-            className="border border-gray-400 rounded px-3 py-2 w-full"
+            className="border border-[#8d758a] rounded px-3 py-2 w-full"
             required
           />
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Algoritma Pencarian</label>
+          <label className="block text-[#260027] font-semibold mb-1">Algoritma Pencarian</label>
           <select
             value={algorithm}
             onChange={(e) => setAlgorithm(e.target.value)}
-            className="border border-gray-400 rounded px-3 py-2 w-full"
+            className="border border-[#8d758a] rounded px-3 py-2 w-full"
           >
-            <option value="1">DFS</option>
-            <option value="2">BFS</option>
+            <option value="1">DFS (Depth-First Search)</option>
+            <option value="2">BFS (Breadth-First Search)</option>
             <option value="3">Bidirectional (Bonus)</option>
           </select>
         </div>
 
         <div>
-          <label className="block font-semibold mb-1">Mode Pencarian</label>
+          <label className="block text-[#260027] font-semibold mb-1">Mode Pencarian</label>
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value)}
@@ -102,15 +110,33 @@ export default function RecipeForm() {
               type="number"
               value={maxRecipes}
               onChange={(e) => setMaxRecipes(e.target.value)}
-              className="border border-gray-400 rounded px-3 py-2 w-full"
+              className="border border-[#8d758a] rounded px-3 py-2 w-full"
               min="1"
             />
           </div>
         )}
 
-        <button type="submit" className="bg-black text-white font-semibold px-4 py-2 rounded">
-          Cari
-        </button>
+        <div className="flex justify-between mt-4">
+          <button type="submit" className="bg-[#260027] text-white font-semibold px-4 py-2 rounded">
+            Cari
+          </button>
+          <div className="flex space-x-4">
+            <button
+              type="button"
+              onClick={handleRefresh}
+              className="bg-gray-300 text-[#260027] font-semibold px-4 py-2 rounded"
+            >
+              Refresh
+            </button>
+            <button
+              type="button"
+              onClick={handleBack}
+              className="bg-[#FAA620] text-[#260027] font-semibold px-4 py-2 rounded"
+            >
+              Kembali
+            </button>
+          </div>
+        </div>
       </form>
 
       {result && (
@@ -118,7 +144,7 @@ export default function RecipeForm() {
           {/* Menampilkan visualisasi tree jika hasil tersedia */}
           {result.tree && (
             <>
-              <h4 className="text-lg font-semibold mt-6 mb-2">Visualisasi Tree</h4>
+              <h4 className="text-lg font-semibold mt-6 mb-2 text-[#260027]">Visualisasi Resep</h4>
               <RecipeTree data={normalizeTreeData(result.tree)} />
             </>
           )}
