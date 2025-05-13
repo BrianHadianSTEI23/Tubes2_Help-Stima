@@ -1,4 +1,4 @@
-# Little Akchemy 2Recipe Finder
+# Little Akchemy 2 Recipe Finder
 
 
 ## Penjelasan singkat algoritma DFS dan BFS yang diimplementasikan
