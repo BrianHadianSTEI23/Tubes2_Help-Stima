@@ -81,7 +81,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white text-center py-4 mt-12">
-        <p>&copy; 2025 Little Alchemy 2 | All Rights Reserved</p>
+        <p>&copy; 2025 Finder Element for Little Alchemy 2 | All Rights Reserved</p>
       </footer>
     </main>
   );
