@@ -2,7 +2,7 @@ package model
 
 type Tree struct {
 	Name     string
-	Children []Tree
+	Children []*Tree
 }
 
 type Response struct {
