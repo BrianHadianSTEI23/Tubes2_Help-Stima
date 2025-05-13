@@ -1,35 +1,38 @@
 {
-  "name": "Brick",
-  "children": [
+  "Name": "Chimney",
+  "Children": [
     {
-      "name": "Clay",
-      "children": [
+      "Name": "Brick",
+      "Children": [
         {
-          "name": "Mudddd",
-          "children": [
-            { "name": "String phone" ,
-              "children" : []  
+          "Name": "Dust",
+          "Children": [
+            { "Name": "Earth" ,
+              "Children" : []  
           },
-            { "name": "Earth" ,
-              "children" : []
+            { "Name": "Air" ,
+              "Children" : []
           }
           ]
         },
         {
-          "name": "Sandiiiii",
-          "children": [
-            { "name": "Airrrr" ,
-              "children" : []
-          },
-            { "name": "Stone",
-              "children" : []
-          }
-          ]
+          "Name": "Fire",
+          "Children": []
         }
       ]
     },
     {
-      "name": "Fire"
+      "Name": "Smoke",
+      "Children":[
+        {
+          "Name": "Fire",
+          "Children": []
+        },
+        {
+          "Name": "Air",
+          "Children": []
+        }
+      ]
     }
   ]
 }
