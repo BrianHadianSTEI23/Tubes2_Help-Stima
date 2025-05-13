@@ -1,57 +1,3 @@
-// package algorithm
-
-// import (
-// 	"littlealchemy2/model"
-// 	"sync"
-// 	"sync/atomic"
-// )
-
-// func DFSAlchemyTree(target string, t []*model.AlchemyTree, r *model.Response, mode int8, numOfFoundRecipe *int64) {
-// 	var wg sync.WaitGroup
-// 	var found int32 = 0
-
-// 	var dfs func(t *model.AlchemyTree)
-// 	dfs = func(t *model.AlchemyTree) {
-// 		defer wg.Done()
-
-// 		if t == nil || atomic.LoadInt32(&found) == 1 {
-// 			return
-// 		}
-
-// 		if t.Name == target {
-// 			atomic.StoreInt32(&found, 1)
-// 			// if found, add to count and construct recipe
-// 			tempJSON := model.Response{
-// 				Status: "Fail",
-// 				Data: model.Tree{
-// 					NumOfRecipe: 0,
-// 					Children:    []string{},
-// 				},
-// 			}
-// 			// RecipeConstructor(t, r, mode, tempJSON)
-// 			return
-// 		}
-
-// 		for _, parent := range t.Parent {
-// 			if atomic.LoadInt32(&found) == 1 {
-// 				return
-// 			}
-// 			wg.Add(1)
-// 			go dfs(parent.Ingridient1)
-// 			go dfs(parent.Ingridient2)
-// 		}
-// 	}
-
-// 	for _, root := range t {
-// 		if root != nil {
-// 			wg.Add(1)
-// 			go dfs(root)
-// 		}
-// 	}
-
-// 	wg.Wait()
-// }
-
 package algorithm
 
 import (
@@ -60,56 +6,61 @@ import (
 	"sync/atomic"
 )
 
-func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, r *model.Response, numOfFoundRecipe *int64) {
-	var wg sync.WaitGroup
-	var found int32 = 0
+func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode int8, askedNumOfRecipes *int64, childNode *model.Tree, mapOfElementsTier map[string]int, currentFoundRecipe *int64) {
 
-	var dfs func(t *model.AlchemyTree)
-	dfs = func(t *model.AlchemyTree) {
-		defer wg.Done()
+	/**
+	algorithm
+	0. make a stack that first is filled by the target
+	1. search the list of created nodes till found the element you're searching for
+	2. get the parent of it
+	3. for each parent, search again for it in the list of created nodes
+	*/
 
-		if t == nil || atomic.LoadInt32(&found) == 1 {
-			return
-		}
-
-		if (*t).Name == "Fire" || (*t).Name == "Water" || (*t).Name == "Air" || (*t).Name == "Earth" || (*t).Name == "Time" {
-			// STOP : adding the tree into the response
-			newTree := model.Tree{
-				Name:     (*t).Name,
-				Children: []model.Tree{},
-			}
-			r.NumOfRecipe++
-			r.Data.Children = append(r.Data.Children, newTree)
-			return
-		}
-		// adding the tree into the response
-		newTree := model.Tree{
-			Name:     (*t).Name,
-			Children: []model.Tree{},
-		}
-
-		// traverse parent
-		for _, parent := range t.Parent {
-			if atomic.LoadInt32(&found) == 1 {
-				return
-			}
-			wg.Add(1)
-			dfs(parent.Ingridient1)
-			wg.Add(1)
-			dfs(parent.Ingridient2)
-		}
-
-		// appending the parent while in recursive
-		r.Data.Children = append(r.Data.Children, newTree)
+	if target == "Fire" || target == "Water" || target == "Air" || target == "Earth" || target == "Time" {
+		childNode.Name = target
+		return
 	}
 
-	// construct the recipe
+	found := false
 	for _, n := range listOfCreatedNodes {
-		if n.Name == target && (*r).NumOfRecipe < (*numOfFoundRecipe) {
-			wg.Add(1)
-			go dfs(n)
+		if n == nil || n.Name != target {
+			continue
+		}
+		for _, p := range n.Parent {
+			// fmt.Println(p.Ingridient1.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient1.Name]))
+			// fmt.Println(p.Ingridient2.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient2.Name]))
+			// fmt.Println(n.Name + " " + strconv.Itoa(mapOfElementsTier[n.Name]))
+			if (mapOfElementsTier[p.Ingridient1.Name] < mapOfElementsTier[n.Name]) || (mapOfElementsTier[p.Ingridient2.Name] < mapOfElementsTier[n.Name]) {
+				ing1 := &model.Tree{Name: p.Ingridient1.Name}
+				ing2 := &model.Tree{Name: p.Ingridient2.Name}
+
+				childNode.Name = target
+				childNode.Children = []*model.Tree{ing1, ing2}
+
+				var localWg sync.WaitGroup
+				localWg.Add(2)
+				go func() {
+					defer localWg.Done()
+					DFSAlchemyTree(ing1.Name, listOfCreatedNodes, mode, askedNumOfRecipes, ing1, mapOfElementsTier, currentFoundRecipe)
+				}()
+				go func() {
+					defer localWg.Done()
+					DFSAlchemyTree(ing2.Name, listOfCreatedNodes, mode, askedNumOfRecipes, ing2, mapOfElementsTier, currentFoundRecipe)
+				}()
+				localWg.Wait()
+
+				atomic.AddInt64(currentFoundRecipe, 1)
+
+				found = true
+				if mode == 1 {
+					return
+				}
+			}
 		}
 	}
 
-	wg.Wait()
+	if !found {
+		childNode.Name = target
+	}
+
 }
