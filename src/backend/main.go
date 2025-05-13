@@ -18,6 +18,7 @@ var mode = new(int)
 var searchAlgorithm = new(int)
 var listOfAllRecipes [][]string
 var listOfCreatedNodes []*model.AlchemyTree
+var mapOfElementsTier map[string]int
 var rootElements []*model.AlchemyTree
 
 // var listOfElementImage map[string]string
@@ -28,7 +29,7 @@ var response = &model.Response{}
 
 func init_main() {
 	// reading file
-	listOfAllRecipes, _ = algorithm.Scraper()
+	listOfAllRecipes, _, mapOfElementsTier = algorithm.Scraper()
 
 	/* build tree that intertwined all possible recipes:
 	start with 5 basic elements, basic tree structure : name, companion, parent, and children
@@ -118,35 +119,30 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	if *searchAlgorithm == 1 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
+		var currentFoundRecipe int64 = 0
+
+		// create initial base node
+		baseNode := &model.Tree{}
 
 		// doing search algorithm
-		algorithm.DFSAlchemyTree(target, listOfCreatedNodes, response, &askedNumOfRecipes)
+		algorithm.DFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, baseNode, mapOfElementsTier, &currentFoundRecipe)
 
 		// final handling
-		// if (*mode) == 2 {
-		// 	if (*response).Data.NumOfRecipe > askedNumOfRecipes {
-		// 		// change the number of recipes found in the response model
-		// 		(*response).Data.NumOfRecipe = askedNumOfRecipes
-		// 	} else {
-		// 		fmt.Printf("Found only : %d recipes\n", ((*response).Data.NumOfRecipe))
-		// 	}
-		// }
+		response.NumOfRecipe = currentFoundRecipe
+		response.Data = *baseNode
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
 
-		// doing search algorithm
-		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, response, &askedNumOfRecipes)
+		// create initial base node
+		baseNode := &model.Tree{
+			Name:     target,
+			Children: []*model.Tree{},
+		}
+		response.Data = *baseNode
 
-		// // final handling
-		// if (*mode) == 2 {
-		// 	if (*response).NumOfRecipe > askedNumOfRecipes {
-		// 		// change the number of recipes found in the response model
-		// 		(*response).NumOfRecipe = askedNumOfRecipes
-		// 	} else {
-		// 		fmt.Printf("Found only : %d recipes\n", ((*response).Data.NumOfRecipe))
-		// 	}
-		// }
+		// doing search algorithm
+		algorithm.BFSAlchemyTree(target, listOfCreatedNodes, (int8)(*mode), &askedNumOfRecipes, response, mapOfElementsTier)
 	}
 
 	log.Println(*response)
