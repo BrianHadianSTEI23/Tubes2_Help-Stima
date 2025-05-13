@@ -11,6 +11,18 @@ const Tree = dynamic(() => import("react-d3-tree").then((mod) => mod.Tree), {
 export default function RecipeTree({ data }) {
   const treeRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 600 });
+  const [elementsImage, setElementsImage] = useState({});
+
+  // Fetch the elements image data from the JSON file
+  useEffect(() => {
+    const fetchImageData = async () => {
+      const response = await fetch("/icon/elements.json");
+      const data = await response.json();
+      setElementsImage(data.Images);
+    };
+
+    fetchImageData();
+  }, []);
 
   // Calculate tree dimensions on component mount
   useEffect(() => {
@@ -21,7 +33,7 @@ export default function RecipeTree({ data }) {
   }, []);
 
   // Unified color for all nodes
-  const nodeColor = "#B0B0B0";  // Set to a pleasant green color
+  const nodeColor = "#B0B0B0";  // Set to a pleasant color
 
   // Memoize the custom node renderer to prevent unnecessary re-renders
   const renderCustomNode = ({ nodeDatum }) => {
@@ -29,11 +41,11 @@ export default function RecipeTree({ data }) {
     const paddingX = 20;
     const charWidth = 8;
     const textWidth = name.length * charWidth;
-    const boxWidth = textWidth + paddingX;
-    const boxHeight = 40;
+    const boxWidth = textWidth + paddingX + 20;
+    const boxHeight = 60; // Increased height for accommodating the image and text
 
-    // Use the same color for all nodes
-    const fillColor = nodeColor;
+    // Get the image link for the current node (element)
+    const imageLink = elementsImage[name] || "";
 
     return (
       <g transform="rotate(180)">
@@ -42,21 +54,34 @@ export default function RecipeTree({ data }) {
           y={-boxHeight / 2}
           width={boxWidth}
           height={boxHeight}
-          fill={fillColor}
+          fill={nodeColor}
           stroke="#191919"
-          strokeWidth="1.5"
+          strokeWidth="1"
           rx={8}
         />
+        
+        {/* Display the image above the text and center it */}
+        {imageLink && (
+          <image
+            href={imageLink}
+            x={-15}  // Positioning the image in the center (boxWidth / 2 - imageWidth / 2)
+            y={-boxHeight / 2 + 5}  // Position the image slightly above the node
+            width={30}  // Set a fixed width for the image
+            height={30} // Set a fixed height for the image
+          />
+        )}
+
+        {/* Display the text below the image */}
         <text
-          fill="#000000" // Set the text color to white for better contrast
+          fill="#000000" // Set the text color to black for better contrast
           x={0}
-          y={5} // Move the text slightly lower inside the node
+          y={boxHeight / 2 - 10} // Move the text slightly lower to leave space for the image
           textAnchor="middle"
-          stroke = "none"
+          stroke="none"
           style={{
             fontSize: "16px", // Slightly larger text for better readability
             fontFamily: "Roboto, sans-serif",
-            fontWeight: "800",  // A bit of boldness for clarity
+            fontWeight: "700",  // A bit of boldness for clarity
           }}
         >
           {name}

@@ -28,13 +28,16 @@ export default function RecipeForm() {
   const handleRefresh = () => {
     window.location.reload(); // Me-refresh halaman saat ini
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Reset result sebelum pengiriman
+    setResult(null);
+    const capitalizedTarget = target.charAt(0).toUpperCase() + target.slice(1).toLowerCase();
     // Membuat payload untuk dikirim
     const payload = {
-      Target : target,
+      Target: capitalizedTarget,
       Algorithm: parseInt(algorithm),
       Mode: parseInt(mode),
       MaxRecipes: parseInt(maxRecipes),
@@ -48,12 +51,12 @@ export default function RecipeForm() {
       const response = await axios.post("http://localhost:8080/api/post-recipe", payload);
       const { Data: val, NumOfRecipe } = response.data;
 
-      console.log(val)
+      console.log(val);
       // Menyimpan hasil yang diterima dari server ke dalam result
       setResult({
         status: "success",
         message: "Data berhasil diterima!",
-        tree:val, // Asumsi response dari server berisi data pohon
+        tree: val, // Asumsi response dari server berisi data pohon
       });
     } catch (err) {
       console.error("Gagal fetch ke backend:", err.message);
