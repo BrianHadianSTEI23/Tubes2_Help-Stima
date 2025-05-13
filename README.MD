@@ -28,9 +28,9 @@ BFS memastikan bahwa jalur terpendek ditemukan pada graf yang tidak berbobot, ka
 ## Instalasi program
 1. Install Go dan Node Js sebelum menjalankan backend dan frontend
 2. Jalankan perintah berikut untuk mengunduh dependencies frontend
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
 ## Cara Menjalankan Program
 1. Masuk ke folder src/backend untuk menjalankan backend
