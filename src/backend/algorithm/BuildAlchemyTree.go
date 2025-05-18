@@ -8,9 +8,9 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 		1. iterate for all the recipes and create the node and put it into list of nodes with parents, children, and companion is nil
 		2. iterate for each node in list of nodes
 	*/
-	for _, element := range *listOfNodes {
+	for i := 0; i < len(*listOfNodes); i++ {
 		for _, recipe := range *listOfAllRecipes {
-			if recipe[1] == element.Name {
+			if recipe[1] == (*listOfNodes)[i].Name {
 				tempCompanion := SearchNodeInCreatedNode(recipe[2], *listOfNodes)
 				// search first if the nodes already made in the listOfNodes
 				if tempCompanion != nil {
@@ -19,16 +19,16 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 					companion := tempCompanion
 
 					// add the each other of each other companion
-					if SearchNodeInCreatedNode(companion.Name, element.Companion) == nil {
-						element.Companion = append(element.Companion, companion)
+					if SearchNodeInCreatedNode(companion.Name, (*listOfNodes)[i].Companion) == nil {
+						(*listOfNodes)[i].Companion = append((*listOfNodes)[i].Companion, companion)
 					}
-					if SearchNodeInCreatedNode(element.Name, companion.Companion) == nil {
-						companion.Companion = append(companion.Companion, element)
+					if SearchNodeInCreatedNode((*listOfNodes)[i].Name, companion.Companion) == nil {
+						companion.Companion = append(companion.Companion, (*listOfNodes)[i])
 					}
 
 					// build parent pair of current element
 					parentPair := &model.Pair{
-						Ingridient1: element,
+						Ingridient1: (*listOfNodes)[i],
 						Ingridient2: companion,
 					}
 					// check if the child node is already created
@@ -48,8 +48,8 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 						}
 
 						// bind the child into the children of both
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
@@ -61,14 +61,14 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 						}
 					} else {
 						childAlchemyTree := SearchNodeInCreatedNode(recipe[0], *listOfNodes)
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
 						}
 						// bind the parent pair into child
-						if SearchPairInCreatedPair(element.Name, companion.Name, childAlchemyTree.Parent) == nil {
+						if SearchPairInCreatedPair((*listOfNodes)[i].Name, companion.Name, childAlchemyTree.Parent) == nil {
 							childAlchemyTree.Parent = append(childAlchemyTree.Parent, parentPair)
 						}
 					}
@@ -84,16 +84,16 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 					}
 
 					// add the each other of each other companion
-					if SearchNodeInCreatedNode(companion.Name, element.Companion) == nil {
-						element.Companion = append(element.Companion, companion)
+					if SearchNodeInCreatedNode(companion.Name, (*listOfNodes)[i].Companion) == nil {
+						(*listOfNodes)[i].Companion = append((*listOfNodes)[i].Companion, companion)
 					}
-					if SearchNodeInCreatedNode(element.Name, companion.Companion) == nil {
-						companion.Companion = append(companion.Companion, element)
+					if SearchNodeInCreatedNode((*listOfNodes)[i].Name, companion.Companion) == nil {
+						companion.Companion = append(companion.Companion, (*listOfNodes)[i])
 					}
 
 					// build parent pair of current element
 					parentPair := &model.Pair{
-						Ingridient1: element,
+						Ingridient1: (*listOfNodes)[i],
 						Ingridient2: companion,
 					}
 
@@ -113,8 +113,8 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 							childAlchemyTree.Parent = append(childAlchemyTree.Parent, parentPair)
 						}
 						// bind the child into the children of both
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
@@ -125,14 +125,14 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 
 					} else {
 						childAlchemyTree := SearchNodeInCreatedNode(recipe[0], *listOfNodes)
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
 						}
 						// bind the parent pair into child
-						if SearchPairInCreatedPair(element.Name, companion.Name, childAlchemyTree.Parent) == nil {
+						if SearchPairInCreatedPair((*listOfNodes)[i].Name, companion.Name, childAlchemyTree.Parent) == nil {
 							childAlchemyTree.Parent = append(childAlchemyTree.Parent, parentPair)
 						}
 					}
@@ -143,7 +143,7 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 					}
 				}
 
-			} else if recipe[2] == element.Name {
+			} else if recipe[2] == (*listOfNodes)[i].Name {
 				tempCompanion := SearchNodeInCreatedNode(recipe[1], *listOfNodes)
 				// search first if the nodes already made in the listOfNodes
 				if tempCompanion != nil {
@@ -152,17 +152,17 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 					companion := tempCompanion
 
 					// add the each other of each other companion
-					if SearchNodeInCreatedNode(companion.Name, element.Companion) == nil {
-						element.Companion = append(element.Companion, companion)
+					if SearchNodeInCreatedNode(companion.Name, (*listOfNodes)[i].Companion) == nil {
+						(*listOfNodes)[i].Companion = append((*listOfNodes)[i].Companion, companion)
 					}
-					if SearchNodeInCreatedNode(element.Name, companion.Companion) == nil {
-						companion.Companion = append(companion.Companion, element)
+					if SearchNodeInCreatedNode((*listOfNodes)[i].Name, companion.Companion) == nil {
+						companion.Companion = append(companion.Companion, (*listOfNodes)[i])
 					}
 
 					// build parent pair of current element
 					parentPair := &model.Pair{
 						Ingridient1: companion,
-						Ingridient2: element,
+						Ingridient2: (*listOfNodes)[i],
 					}
 
 					// check if the node is already created in the childre
@@ -181,8 +181,8 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 							childAlchemyTree.Parent = append(childAlchemyTree.Parent, parentPair)
 						}
 						// bind the child into the children of both
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
@@ -194,14 +194,14 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 						}
 					} else {
 						childAlchemyTree := SearchNodeInCreatedNode(recipe[0], *listOfNodes)
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
 						}
 						// bind the parent pair into child
-						if SearchPairInCreatedPair(companion.Name, element.Name, childAlchemyTree.Parent) == nil {
+						if SearchPairInCreatedPair(companion.Name, (*listOfNodes)[i].Name, childAlchemyTree.Parent) == nil {
 							childAlchemyTree.Parent = append(childAlchemyTree.Parent, parentPair)
 						}
 					}
@@ -216,17 +216,17 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 					}
 
 					// add the each other of each other companion
-					if SearchNodeInCreatedNode(companion.Name, element.Companion) == nil {
-						element.Companion = append(element.Companion, companion)
+					if SearchNodeInCreatedNode(companion.Name, (*listOfNodes)[i].Companion) == nil {
+						(*listOfNodes)[i].Companion = append((*listOfNodes)[i].Companion, companion)
 					}
-					if SearchNodeInCreatedNode(element.Name, companion.Companion) == nil {
-						companion.Companion = append(companion.Companion, element)
+					if SearchNodeInCreatedNode((*listOfNodes)[i].Name, companion.Companion) == nil {
+						companion.Companion = append(companion.Companion, (*listOfNodes)[i])
 					}
 
 					// build parent pair of current element
 					parentPair := &model.Pair{
 						Ingridient1: companion,
-						Ingridient2: element,
+						Ingridient2: (*listOfNodes)[i],
 					}
 
 					// check if the node is already created in the childre
@@ -245,8 +245,8 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 							childAlchemyTree.Parent = append(childAlchemyTree.Parent, parentPair)
 						}
 						// bind the child into the children of both
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
@@ -258,14 +258,14 @@ func BuildAlchemyTree(rootElements []*model.AlchemyTree, listOfAllRecipes *[][]s
 						}
 					} else {
 						childAlchemyTree := SearchNodeInCreatedNode(recipe[0], *listOfNodes)
-						if SearchNodeInCreatedNode(recipe[0], element.Children) == nil {
-							element.Children = append(element.Children, childAlchemyTree)
+						if SearchNodeInCreatedNode(recipe[0], (*listOfNodes)[i].Children) == nil {
+							(*listOfNodes)[i].Children = append((*listOfNodes)[i].Children, childAlchemyTree)
 						}
 						if SearchNodeInCreatedNode(recipe[0], companion.Children) == nil {
 							companion.Children = append(companion.Children, childAlchemyTree)
 						}
 						// bind the parent pair into child
-						if SearchPairInCreatedPair(element.Name, companion.Name, childAlchemyTree.Parent) == nil {
+						if SearchPairInCreatedPair((*listOfNodes)[i].Name, companion.Name, childAlchemyTree.Parent) == nil {
 							childAlchemyTree.Parent = append(childAlchemyTree.Parent, parentPair)
 						}
 					}

@@ -1,7 +1,9 @@
 package algorithm
 
 import (
+	"fmt"
 	"littlealchemy2/model"
+	"strconv"
 	"sync"
 	"sync/atomic"
 )
@@ -56,9 +58,9 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 					}
 					// search the parent of the head
 					for _, p := range node.Parent {
-						// fmt.Println(p.Ingridient1.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient1.Name]))
-						// fmt.Println(p.Ingridient2.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient2.Name]))
-						// fmt.Println(node.Name + " " + strconv.Itoa(mapOfElementsTier[node.Name]))
+						fmt.Println(p.Ingridient1.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient1.Name]))
+						fmt.Println(p.Ingridient2.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient2.Name]))
+						fmt.Println(node.Name + " " + strconv.Itoa(mapOfElementsTier[node.Name]))
 
 						if (mapOfElementsTier[p.Ingridient1.Name] <= mapOfElementsTier[item.Name]) || (mapOfElementsTier[p.Ingridient2.Name] <= mapOfElementsTier[item.Name]) {
 

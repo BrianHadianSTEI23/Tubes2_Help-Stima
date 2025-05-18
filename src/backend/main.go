@@ -33,6 +33,8 @@ func init_main() {
 	// reading file
 	listOfAllRecipes, _, mapOfElementsTier = algorithm.Scraper()
 
+	// fmt.Println(listOfAllRecipes)
+
 	/* build tree that intertwined all possible recipes:
 	start with 5 basic elements, basic tree structure : name, companion, parent, and children
 	*/
