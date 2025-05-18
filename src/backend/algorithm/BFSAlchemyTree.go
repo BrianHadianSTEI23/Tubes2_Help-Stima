@@ -39,7 +39,6 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 		var localWg sync.WaitGroup
 		nextLevelChan := make(chan QueueItem, 100)
 		stopFlag := int32(0)
-		(*totalVisitedNode)++
 
 		for _, item := range BFSQueue {
 			localWg.Add(1)
@@ -86,6 +85,7 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 							nextLevelChan <- QueueItem{Name: ing2.Name, Tree: ing2}
 
 							atomic.AddInt64(&response.NumOfRecipe, 1)
+							atomic.AddInt64((totalVisitedNode), 1)
 
 							if mode == 1 && response.NumOfRecipe >= *askedNumOfRecipes { // first found
 								atomic.StoreInt32(&stopFlag, 1)
@@ -107,7 +107,7 @@ func BFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 		}
 
 		// Stop if early exit condition met
-		if mode == 1 && atomic.LoadInt32(&stopFlag) == 1 {
+		if (mode == 1 && atomic.LoadInt32(&stopFlag) == 1) || (*totalVisitedNode) > 1000 {
 			break
 		}
 

@@ -31,7 +31,6 @@ func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 			// fmt.Println(p.Ingridient2.Name + " " + strconv.Itoa(mapOfElementsTier[p.Ingridient2.Name]))
 			// fmt.Println(n.Name + " " + strconv.Itoa(mapOfElementsTier[n.Name]))
 			if (mapOfElementsTier[p.Ingridient1.Name] <= mapOfElementsTier[n.Name]) || (mapOfElementsTier[p.Ingridient2.Name] <= mapOfElementsTier[n.Name]) {
-				(*totalVisitedNode)++
 				ing1 := &model.Tree{Name: p.Ingridient1.Name}
 				ing2 := &model.Tree{Name: p.Ingridient2.Name}
 
@@ -51,9 +50,10 @@ func DFSAlchemyTree(target string, listOfCreatedNodes []*model.AlchemyTree, mode
 				localWg.Wait()
 
 				atomic.AddInt64(currentFoundRecipe, 1)
+				atomic.AddInt64((totalVisitedNode), 1)
 
 				found = true
-				if mode == 1 {
+				if mode == 1 || (*totalVisitedNode) > 1000 {
 					return
 				}
 			}

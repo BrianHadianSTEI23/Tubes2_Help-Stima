@@ -138,6 +138,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		response.Data = *baseNode
 		response.TotalVisitedNode = (*totalVisitedNode)
 		response.ExecutionTime = elapsed.Milliseconds()
+		(*totalVisitedNode) = 0
 	} else if *searchAlgorithm == 2 {
 		// get how many num of recipes is being asked
 		var askedNumOfRecipes int64 = (int64)((*getRequest).MaxRecipes)
@@ -155,6 +156,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		elapsed := time.Since(start)
 		response.TotalVisitedNode = (*totalVisitedNode)
 		response.ExecutionTime = elapsed.Milliseconds()
+		(*totalVisitedNode) = 0
 	}
 
 	log.Println(*response)
